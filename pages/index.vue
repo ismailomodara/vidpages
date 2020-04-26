@@ -1,15 +1,11 @@
 <template>
   <div class="container">
     <div>
-      <logo />
       <h1 class="title">
         vidpages
       </h1>
-      <h2 class="subtitle">
-        Vidpages
-      </h2>
       <div>
-        <el-input type="text" v-model="email" />
+        <el-input v-model="email" type="text" />
         <el-button type="primary" @click="create">Create</el-button>
       </div>
     </div>
@@ -17,13 +13,9 @@
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-
 export default {
   name: 'Home',
-  components: {
-    Logo
-  },
+  components: {},
   data() {
     return {
       email: ''
@@ -37,7 +29,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -48,12 +40,11 @@ export default {
 }
 
 .title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
+  font-family: 'Avenir', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: block;
-  font-weight: 300;
   font-size: 100px;
-  color: #35495e;
+  color: #222151;
   letter-spacing: 1px;
 }
 

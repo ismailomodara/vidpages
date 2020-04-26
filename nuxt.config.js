@@ -19,15 +19,23 @@ export default {
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#fff' },
+  loading: { color: '#7733f4' },
   /*
    ** Global CSS
    */
-  css: ['element-ui/lib/theme-chalk/index.css'],
+  css: [
+    'bootstrap/dist/css/bootstrap.min.css',
+    'element-ui/lib/theme-chalk/index.css',
+    '@/assets/css/vid-variables.scss',
+    '@/assets/css/vid-icons.css',
+    '@/assets/css/vid-ds.scss',
+    '@/assets/css/vid-main.scss',
+    '@/assets/css/vid-media.scss'
+  ],
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/element-ui'],
+  plugins: ['@/plugins/element-ui', '@/plugins/directives'],
   /*
    ** Nuxt.js dev-modules
    */

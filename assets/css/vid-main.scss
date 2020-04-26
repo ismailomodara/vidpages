@@ -30,15 +30,8 @@ $--color-text: #222151;
 @font-face {
   font-family: 'Avenir';
   font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/AvenirLTStd-Book.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'Avenir';
-  font-style: normal;
   font-weight: 500;
-  src: url('../fonts/AvenirLTStd-Roman.woff') format('woff');
+  src: url('../fonts/AvenirLTStd-Medium.woff') format('woff');
 }
 
 
@@ -122,4 +115,24 @@ a, a:hover {
 
 .text-primary {
   color: $--color-primary !important;
+}
+
+.vid-event-title {
+  .el-form-item__label {
+    color: #fff;
+    left: 40px;
+    font-size: 2.5rem;
+  }
+
+  .has-value {
+    top: 18%;
+    left: 30px;
+    font-size: 13px;
+  }
+
+  .el-input__inner {
+    color: #fff;
+    font-size: 2.8rem;
+    padding-left: 40px;
+  }
 }

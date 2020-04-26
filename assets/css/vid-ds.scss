@@ -1,0 +1,95 @@
+// Custom Input
+
+.vid-custom-input {
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #22215100;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
+  background: #ffffff;
+
+  .el-form-item__label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 50px;
+    letter-spacing: -0.5px;
+    font-size: 20px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    line-height: 1;
+    font-weight: 400;
+    opacity: 0.5;
+    transition: all 0.2s ease-out;
+  }
+
+  .has-value {
+    color: #222151;
+    top: 30%;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.25s ease-out;
+
+    + div i {
+      opacity: 1 !important;
+      transition: all 0.25s ease-out;
+    }
+  }
+
+  .el-input__inner, .el-textarea__inner {
+    color: #222151;
+    font-weight: 600;
+    font-size: 1.4rem;
+    height: 100px;
+    padding: 15px 50px 0;
+    background: transparent;
+    border-radius: 10px;
+    border: 1px solid #22215100;
+    width: 100%;
+    transition: all 0.25s ease-out;
+  }
+
+  span.el-input__prefix {
+   left: 20px;
+
+    i {
+      font-size: 1rem;
+      font-weight: 300;
+      position: relative;
+      top: 4px;
+      opacity: 0.5;
+      transition: all 0.25s ease-in;
+    }
+  }
+
+  .el-date-editor {
+    width: 100%;
+  }
+
+  .el-textarea__inner {
+    height: auto !important;
+  }
+
+  .el-textarea__inner {
+    height: 80px;
+    padding-top: 28px;
+  }
+
+  .el-input__inner:focus, .el-textarea__inner:focus {
+    outline: 0 !important;
+    border: 1px solid #22215150;
+    transition: all 0.25s ease-in;
+  }
+}
+
+// Button
+.el-button {
+  border-radius: 5px;
+  font-weight: 500;
+  padding: 15px 40px;
+
+  &:focus {
+    box-shadow: none;
+    outline: none;
+  }
+}
