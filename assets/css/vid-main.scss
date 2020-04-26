@@ -1,0 +1,125 @@
+$--color-primary: #7733f4;
+$--color-text: #222151;
+
+::selection {
+  color: #7733f4;
+  background: #7733f430;
+}
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/Quicksand-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/Quicksand-Medium.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/Quicksand-SemiBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Avenir';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/AvenirLTStd-Book.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Avenir';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/AvenirLTStd-Roman.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Avenir';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/AvenirLTStd-Black.woff') format('woff');
+}
+
+html, body {
+  font-size: 16px;
+  font-family: "Quicksand", sans-serif !important;
+  scroll-behavior: smooth;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body {
+  color: $--color-text;
+  font-weight: 400;
+  line-height: 1.4;
+  background: #f9f9fb;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #ccc;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #7733f4;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Avenir", sans-serif;
+  font-weight: 500;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2.5rem;
+}
+
+h3 {
+  font-size: 1.7rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.2rem;
+}
+
+h6 {
+  font-size: 0.8rem;
+}
+
+p {
+  line-height: 1.4;
+  font-size: 1rem;
+}
+
+a, a:hover {
+  color: $--color-primary;
+  text-decoration: none;
+}
+
+.text-primary {
+  color: $--color-primary !important;
+}
