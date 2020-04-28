@@ -1,10 +1,21 @@
 <template>
   <div class="vid-create">
-    <navbar></navbar>
-    <div class="vid-header">
+    <navbar />
+    <div
+      class="vid-header"
+      :style="{
+        background: coverImage === 'color' ? `${backgroundUrl}` : false,
+        backgroundImage:
+          coverImage === 'others' ? `url(${backgroundUrl})` : false
+      }"
+    >
+      <div
+        v-if="backgroundUrl && coverImage !== 'color'"
+        class="text-overlay"
+      ></div>
       <div class="container">
         <div class="vid-event-title">
-          <el-form :model="event.title">
+          <el-form :model="event">
             <el-form-item
               v-custom-input="event.title"
               class="vid-custom-input"
@@ -18,7 +29,9 @@
               ></el-input>
             </el-form-item>
           </el-form>
-          <el-button type="white" plain>Update Cover Image</el-button>
+          <el-button type="white" plain @click="updateCoverImage = true"
+            >Update Cover Image</el-button
+          >
         </div>
       </div>
     </div>
@@ -169,20 +182,28 @@
         </el-form>
       </div>
     </div>
+    <update-cover-image
+      :show.sync="updateCoverImage"
+      :background.sync="backgroundUrl"
+    />
   </div>
 </template>
 
 <script>
 import Navbar from '~/components/Navbar'
+import UpdateCoverImage from '~/components/BackgroundImage/UpdateCoverImage'
 
 export default {
   name: 'Create',
   components: {
-    Navbar
+    Navbar,
+    UpdateCoverImage
   },
   data() {
     return {
       email: '',
+      updateCoverImage: false,
+      backgroundUrl: '',
       event: {
         zoom: {
           url: '',
@@ -198,7 +219,13 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    coverImage() {
+      return this.backgroundUrl && this.backgroundUrl.charAt(0) === '#'
+        ? 'color'
+        : 'others'
+    }
+  },
   methods: {}
 }
 </script>
@@ -209,15 +236,34 @@ export default {
     height: 550px;
     background: #222151;
     position: relative;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    .text-overlay {
+      height: 160px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.02) 5%,
+        rgba(0, 0, 0, 0.1) 50%,
+        rgba(0, 0, 0, 0.75) 100%
+      );
+    }
 
     .container {
       position: relative;
       height: 100%;
+      z-index: 2;
 
       .vid-event-title {
         position: absolute;
         left: 0;
-        bottom: 70px;
+        bottom: 50px;
         width: 100%;
         display: flex;
         justify-content: space-between;

@@ -15,7 +15,10 @@
     "@nuxtjs/axios": "^5.3.6",
     "bootstrap": "^4.4.1",
     "element-ui": "^2.4.11",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "remove": "^0.1.5",
+    "vue-ele-upload-video": "^2.0.5",
+    "vue-simple-uploader": "^0.7.4"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",

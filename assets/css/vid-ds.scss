@@ -86,10 +86,18 @@
 .el-button {
   border-radius: 5px;
   font-weight: 500;
-  padding: 15px 40px;
+
+  &:not(.el-button--small) {
+    padding: 15px 40px;
+  }
 
   &:focus {
     box-shadow: none;
     outline: none;
   }
+}
+
+//Color Picker
+.el-color-picker__trigger {
+  width: 200px;
 }
