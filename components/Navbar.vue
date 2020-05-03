@@ -4,11 +4,25 @@
       <nuxt-link :to="{ name: 'index' }" class="vid-logo">
         Vidpages
       </nuxt-link>
+      <p v-if="user">
+        <el-dropdown @command="command">
+          <span class="el-dropdown-link">
+            Hello
+            <strong>{{ user.email }}</strong>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="home">Home</el-dropdown-item>
+            <el-dropdown-item command="logout">Logout</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import Cookies from 'js-cookie'
+
 export default {
   name: 'Navbar',
   props: {
@@ -16,7 +30,25 @@ export default {
   },
   data() {
     return {
-      email: ''
+      user: ''
+    }
+  },
+  created() {
+    if (Cookies.get('user')) {
+      this.user = JSON.parse(Cookies.get('user'))
+    }
+  },
+  methods: {
+    command(command) {
+      if (command === 'home') {
+        this.$router.push({
+          name: 'home',
+          params: { userId: this.user.user_id }
+        })
+      } else if (command === 'logout') {
+        Cookies.remove('user')
+        this.$router.push({ name: 'index' })
+      }
     }
   }
 }
@@ -29,6 +61,12 @@ export default {
   width: 100%;
   height: 80px;
   background: #ffffff;
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   &.inverse {
     background: #222151;

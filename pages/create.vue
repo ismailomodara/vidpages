@@ -50,46 +50,57 @@
           class="vid-event-form"
         >
           <div class="vid-section">
-            <h6>Video Provider</h6>
-            <el-row type="flex" :gutter="40" class="flex-wrap">
-              <el-col :lg="12"
-                ><el-form-item
-                  v-custom-input="event.video_provider"
-                  class="vid-custom-input"
-                  label="Video Provider"
-                  prop="event_video_provider"
-                >
-                  <el-select
-                    v-model="event.video_provider"
-                    placeholder=""
-                    @change="setVideoProvider"
-                  >
-                    <template slot="prefix">
-                      <i class="vid-icon--video exp"></i>
-                    </template>
-                    <el-option
-                      v-for="(provider, index) in videoProviders"
-                      :key="index"
-                      :label="provider.provider"
-                      :value="provider.provider"
-                    ></el-option>
-                  </el-select> </el-form-item
-              ></el-col>
-              <el-col :lg="12">
-                <div v-if="selectedVideoProvider" class="video-provider">
-                  <p>
-                    Sign in with {{ selectedVideoProvider.provider }} and we'd
-                    link it up automatically
-                  </p>
-                  <a :href="selectedVideoProvider.oauthUrl">
-                    <img :src="selectedVideoProvider.buttonImage" />
-                  </a>
-                </div>
+            <el-row v-if="event.video_provider">
+              <el-col :md="24">
+                <p>
+                  You are signed in as
+                  <strong>{{ event.user_email }}</strong> on
+                  {{ event.video_provider }}
+                </p>
               </el-col>
             </el-row>
+            <template v-if="!event.user_email">
+              <h6>Video Provider</h6>
+              <el-row type="flex" :gutter="40" class="flex-wrap">
+                <el-col :lg="12"
+                  ><el-form-item
+                    v-custom-input="event.video_provider"
+                    class="vid-custom-input"
+                    label="Video Provider"
+                    prop="event_video_provider"
+                  >
+                    <el-select
+                      v-model="event.video_provider"
+                      placeholder=""
+                      @change="setVideoProvider"
+                    >
+                      <template slot="prefix">
+                        <i class="vid-icon--video exp"></i>
+                      </template>
+                      <el-option
+                        v-for="(provider, index) in videoProviders"
+                        :key="index"
+                        :label="provider.provider"
+                        :value="provider.provider.toLowerCase()"
+                      ></el-option>
+                    </el-select> </el-form-item
+                ></el-col>
+                <el-col :lg="12">
+                  <div v-if="selectedVideoProvider" class="video-provider">
+                    <p>
+                      Sign in with {{ selectedVideoProvider.provider }} and we'd
+                      link it up automatically
+                    </p>
+                    <a :href="selectedVideoProvider.oauthUrl">
+                      <img :src="selectedVideoProvider.buttonImage" />
+                    </a>
+                  </div>
+                </el-col>
+              </el-row>
+            </template>
           </div>
-          <div v-if="selectedVideoProvider" class="vid-section">
-            <h6>{{ selectedVideoProvider.provider }} Info</h6>
+          <div v-if="event.video_provider" class="vid-section">
+            <h6>{{ event.video_provider }} Info</h6>
             <el-row :gutter="30" type="flex" class="flex-wrap">
               <el-col :lg="24"
                 ><el-form-item
@@ -106,7 +117,11 @@
                   ></el-input> </el-form-item
               ></el-col>
             </el-row>
-            <el-row :gutter="30" type="flex">
+            <el-row
+              v-if="event.video_provider.toLowerCase() === 'zoom'"
+              :gutter="30"
+              type="flex"
+            >
               <el-col :lg="12"
                 ><el-form-item
                   v-custom-input="event.zoom_meeting_id"
@@ -287,6 +302,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import request from '../controller/request'
 import Navbar from '~/components/Navbar'
 import UpdateCoverImage from '~/components/BackgroundImage/UpdateCoverImage'
@@ -328,7 +344,8 @@ export default {
         event_duration: '',
         video_provider: '',
         zoom_meeting_id: '',
-        zoom_meeting_password: ''
+        zoom_meeting_password: '',
+        user_email: ''
       },
       hasStartTime: true,
       creatingEvent: false
@@ -350,11 +367,21 @@ export default {
     }
   },
   created() {
+    if (this.$route.query.user_id) {
+      this.setProvider()
+    }
     this.fetchAllPlans()
     this.fetchAllVideoProviders()
     this.generateRef()
   },
   methods: {
+    setProvider() {
+      const data = this.$route.query
+      Cookies.set('user', JSON.stringify(data))
+      this.event.user_id = data.user_id
+      this.event.user_email = data.email
+      this.event.video_provider = data.provider
+    },
     async fetchAllPlans() {
       await request
         .getPlans(this.ip)

@@ -6,8 +6,20 @@
     <navbar :inverse="true" />
     <div class="vid-event-summary">
       <h1>{{ eventName }}</h1>
-      <el-input v-model="eventPublicUrl" class="input-with-select" disabled>
-      </el-input>
+      <el-row type="flex" justify="center">
+        <el-col :md="16" :sm="24" class="mx-auto">
+          <el-input v-model="eventPublicUrl" class="mb-2" readonly> </el-input>
+        </el-col>
+      </el-row>
+      <div>
+        <a
+          :href="eventPublicUrl"
+          class="el-button el-button--primary"
+          target="_blank"
+          >Visit</a
+        >
+        <el-button type="outline" @click="copyUrl">Copy</el-button>
+      </div>
     </div>
     <div class="vid-manage-nav">
       <el-menu

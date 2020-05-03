@@ -1,6 +1,23 @@
 <template>
   <div class="vid-event-view">
-    <div class="vid-header">
+    <div
+      class="vid-header"
+      :style="{
+        background: backgroundType === 'color' ? `${event.eventBanner}` : false,
+        backgroundImage:
+          backgroundType === 'image' ? `url(${event.eventBanner})` : false
+      }"
+    >
+      <video
+        v-if="backgroundType === 'video'"
+        :src="event.eventBanner"
+        :autoplay="true"
+        :controls="false"
+      ></video>
+      <div
+        v-if="backgroundType === 'image' || backgroundType === 'video'"
+        class="background-overlay"
+      ></div>
       <div class="container">
         <div class="vid-event-title">
           <div>
@@ -38,7 +55,7 @@
         <!--        <el-button type="secondary">Add To Calendar</el-button>-->
       </div>
     </section>
-    <section class="vid-speakers">
+    <section v-if="speakers.length" class="vid-speakers">
       <div class="container">
         <h4 class="section-heading">EVENT SPEAKERS</h4>
         <div class="vid-speaker-container">
@@ -58,7 +75,7 @@
         </div>
       </div>
     </section>
-    <section class="vid-schedule">
+    <section v-if="schedule.length" class="vid-schedule">
       <div class="container">
         <el-row type="flex" :gutter="40" class="flex-wrap">
           <el-col :sm="24" :md="12">
@@ -87,7 +104,7 @@
         </el-row>
       </div>
     </section>
-    <section class="vid-sponsors">
+    <section v-if="sponsors.length" class="vid-sponsors">
       <div class="container">
         <h4 class="section-heading">OUR SPONSORS</h4>
         <div class="vid-sponsors-container">
@@ -100,7 +117,7 @@
         </div>
       </div>
     </section>
-    <section class="vid-gallery">
+    <section v-if="gallery.length" class="vid-gallery">
       <div class="container">
         <h4 class="section-heading">GALLERY</h4>
         <div class="vid-gallery-container">
@@ -150,6 +167,7 @@ export default {
   components: {},
   data() {
     return {
+      backgroundType: '',
       months: [
         'January',
         'February',
@@ -197,6 +215,7 @@ export default {
     }
   },
   created() {
+    this.showLoaderDialog = true
     if (this.$route.params.eventRef) {
       this.getEvent()
     } else {
@@ -208,6 +227,24 @@ export default {
     scrollTo(ref) {
       this.$refs[ref].scrollIntoView()
     },
+    setBackgroundType() {
+      const videoFormat = ['mp4', 'mov', '3gp']
+      const imageFormat = ['jpg', 'jpeg', 'png']
+
+      const backgroundUrl = this.event.eventBanner.split('.')
+
+      if (videoFormat.includes(backgroundUrl[backgroundUrl - 1])) {
+        this.backgroundType = 'video'
+      } else if (
+        imageFormat.includes(backgroundUrl[backgroundUrl - 1]) ||
+        this.event.eventBanner.includes('unsplash')
+      ) {
+        this.backgroundType = 'image'
+      } else if (this.event.eventBanner.charAt(0) === '#') {
+        this.backgroundType = 'color'
+      }
+      this.showLoaderDialog = false
+    },
     async getEvent() {
       await request.getEvent(this.$route.params.eventRef).then((response) => {
         if (response.data.success) {
@@ -217,7 +254,7 @@ export default {
           this.sponsors = response.data.sponsors
           this.gallery = response.data.images
           this.attend.event_ref = response.data.event.eventRef
-          this.showLoaderDialog = false
+          this.setBackgroundType()
         }
       })
     },
@@ -270,6 +307,15 @@ export default {
     background-size: cover;
     display: flex;
 
+    .background-overlay {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
     .container {
       position: relative;
       height: 100%;
@@ -304,6 +350,8 @@ export default {
           font-size: 5rem;
           font-weight: 600;
           margin-bottom: 5px;
+          width: 80%;
+          line-height: 1.4;
         }
 
         .vid-event-calendar {
@@ -477,6 +525,10 @@ export default {
     .vid-event-title {
       flex-direction: column-reverse;
       justify-content: center !important;
+
+      h1 {
+        width: 100% !important;
+      }
 
       > div:not(.vid-event-calendar) {
         text-align: center;

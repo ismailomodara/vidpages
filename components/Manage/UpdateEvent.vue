@@ -272,7 +272,10 @@ export default {
 
       if (videoFormat.includes(backgroundUrl[backgroundUrl - 1])) {
         this.backgroundType = 'video'
-      } else if (imageFormat.includes(backgroundUrl[backgroundUrl - 1])) {
+      } else if (
+        imageFormat.includes(backgroundUrl[backgroundUrl - 1]) ||
+        this.event.event_banner.includes('unsplash')
+      ) {
         this.backgroundType = 'image'
       } else if (this.event.event_banner.charAt(0) === '#') {
         this.backgroundType = 'color'

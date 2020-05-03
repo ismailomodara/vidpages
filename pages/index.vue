@@ -5,7 +5,7 @@
       <div class="vid-header">
         <div class="container">
           <el-row type="flex" :gutter="40" align="middle">
-            <el-col :lg="12" class="vid-header-title">
+            <el-col :md="12" class="vid-header-title">
               <h2>Create video based events in minutes</h2>
               <div>
                 <el-dropdown>
@@ -26,7 +26,7 @@
                 >
               </div>
             </el-col>
-            <el-col :lg="12">
+            <el-col :md="12">
               <div class="illustration">
                 <img src="@/assets/img/schedule-illustration.svg" alt />
               </div>
