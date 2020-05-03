@@ -5,7 +5,7 @@
       <el-color-picker v-model="selectedColor"></el-color-picker>
     </div>
     <el-row :gutter="20" type="flex" class="flex-wrap">
-      <el-col v-for="(color, index) in colors" :key="index" :lg="6"
+      <el-col v-for="(color, index) in colors" :key="index" :sm="6" :md="6"
         ><div
           :style="{ backgroundColor: `${color}` }"
           :class="['solid-color', { 'is-selected': selectedColor === color }]"

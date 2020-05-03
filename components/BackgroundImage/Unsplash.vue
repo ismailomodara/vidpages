@@ -16,7 +16,12 @@
       class="flex-wrap"
       :style="{ height: '230px', overflowY: 'scroll' }"
     >
-      <el-col v-for="(image, index) in images" :key="index" :lg="6" class="mb-4"
+      <el-col
+        v-for="(image, index) in images"
+        :key="index"
+        :sm="6"
+        :md="6"
+        class="mb-4"
         ><div
           :class="[
             'unsplash-image',

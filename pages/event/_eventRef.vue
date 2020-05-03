@@ -1,5 +1,5 @@
 <template>
-  <div class="vid-update">
+  <div>
     <EventView v-if="!showLoaderDialog"></EventView>
     <el-dialog
       :visible="showLoaderDialog"

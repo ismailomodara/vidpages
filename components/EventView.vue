@@ -120,7 +120,11 @@
           v-model="attend.attendee_email"
           class="input-with-select"
         ></el-input>
-        <el-button :loading="attending" type="white" @click="attendEvent"
+        <el-button
+          :loading="attending"
+          type="white"
+          placeholder="you@mail.com"
+          @click="attendEvent"
           >Attend</el-button
         >
       </div>
@@ -511,14 +515,18 @@ export default {
 }
 
 @media (max-width: 600px) {
+  .vid-event-view .el-dialog {
+    width: 100% !important;
+  }
+
   .vid-event-title {
     h1 {
       font-size: 3rem !important;
     }
   }
   .vid-event-calendar {
-    height: 200px !important;
-    width: 200px !important;
+    height: 180px !important;
+    width: 180px !important;
     border-radius: 15px;
 
     h3 {

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="showDialog">
+  <el-dialog :visible.sync="showDialog" class="bg-image-dialog">
     <div class="upload-cover-image">
       <el-menu
         :default-active="activeTab"
@@ -130,6 +130,21 @@ export default {
   .cover-image-action-area {
     width: 75%;
     padding: 30px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .upload-cover-image {
+    flex-direction: column;
+
+    ul {
+      display: flex;
+      border: none;
+    }
+
+    .cover-image-action-area {
+      width: 100%;
+    }
   }
 }
 </style>

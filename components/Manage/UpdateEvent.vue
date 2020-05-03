@@ -454,8 +454,7 @@ export default {
       height: 300px;
 
       .vid-event-title {
-        right: 50% !important;
-        transform: translateX(-50%);
+        right: 20% !important;
       }
     }
 
