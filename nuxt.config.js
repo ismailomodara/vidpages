@@ -1,5 +1,3 @@
-import $axios from '@nuxtjs/axios'
-
 export default {
   mode: 'universal',
   /*
@@ -68,16 +66,6 @@ export default {
     extend(config, ctx) {}
   },
   generate: {
-    routes() {
-      return $axios
-        .post(
-          'https://47tidnqigi.execute-api.us-east-1.amazonaws.com/api/event'
-        )
-        .then((res) => {
-          return res.data.map((ref) => {
-            return '/event/' + ref.event.eventRef
-          })
-        })
-    }
+    fallback: true
   }
 }
