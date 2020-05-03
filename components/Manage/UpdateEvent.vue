@@ -1,40 +1,23 @@
 <template>
-  <div class="vid-create">
-    <navbar />
+  <div class="vid-update">
     <div
       class="vid-header"
       :style="{
-        background: coverImage === 'color' ? `${backgroundUrl}` : false,
+        background:
+          backgroundType === 'color' ? `${event.event_banner}` : false,
         backgroundImage:
-          coverImage === 'others' ? `url(${backgroundUrl})` : false
+          backgroundType === 'image' ? `url(${event.event_banner})` : false
       }"
     >
       <video
-        v-if="videoCoverBg"
-        :src="backgroundUrl"
+        v-if="backgroundType === 'video'"
+        :src="event.event_banner"
         :autoplay="true"
         :controls="false"
       ></video>
-      <div
-        v-if="backgroundUrl && coverImage !== 'color'"
-        class="text-overlay"
-      ></div>
+      <div v-if="backgroundType !== 'color'" class="text-overlay"></div>
       <div class="container">
         <div class="vid-event-title">
-          <el-form :model="event">
-            <el-form-item
-              v-custom-input="event.event_name"
-              class="vid-custom-input"
-              label="Event Title"
-              prop="event_name"
-            >
-              <el-input
-                v-model="event.event_name"
-                type="text"
-                auto-complete="off"
-              ></el-input>
-            </el-form-item>
-          </el-form>
           <el-button type="white" plain @click="updateCoverImage = true"
             >Update Cover Image</el-button
           >
@@ -50,96 +33,27 @@
           class="vid-event-form"
         >
           <div class="vid-section">
-            <h6>Video Provider</h6>
-            <el-row type="flex" :gutter="40" class="flex-wrap">
-              <el-col :lg="12"
-                ><el-form-item
-                  v-custom-input="event.video_provider"
-                  class="vid-custom-input"
-                  label="Video Provider"
-                  prop="event_video_provider"
-                >
-                  <el-select
-                    v-model="event.video_provider"
-                    placeholder=""
-                    @change="setVideoProvider"
-                  >
-                    <template slot="prefix">
-                      <i class="vid-icon--video exp"></i>
-                    </template>
-                    <el-option
-                      v-for="(provider, index) in videoProviders"
-                      :key="index"
-                      :label="provider.provider"
-                      :value="provider.provider"
-                    ></el-option>
-                  </el-select> </el-form-item
-              ></el-col>
-              <el-col :lg="12">
-                <div v-if="selectedVideoProvider" class="video-provider">
-                  <p>
-                    Sign in with {{ selectedVideoProvider.provider }} and we'd
-                    link it up automatically
-                  </p>
-                  <a :href="selectedVideoProvider.oauthUrl">
-                    <img :src="selectedVideoProvider.buttonImage" />
-                  </a>
-                </div>
-              </el-col>
-            </el-row>
-          </div>
-          <div v-if="selectedVideoProvider" class="vid-section">
-            <h6>{{ selectedVideoProvider.provider }} Info</h6>
+            <h6>Video Info</h6>
             <el-row :gutter="30" type="flex" class="flex-wrap">
               <el-col :lg="24"
                 ><el-form-item
-                  v-custom-input="event.video_url"
+                  v-custom-input="event.event_video_url"
                   class="vid-custom-input"
                   label="URL"
-                  prop="video_provider_meeting_id"
+                  prop="event_video_url"
                 >
                   <el-input
-                    v-model="event.video_url"
+                    v-model="event.event_video_url"
                     type="text"
                     auto-complete="off"
                     prefix-icon="vid-icon--hash"
-                  ></el-input> </el-form-item
-              ></el-col>
-            </el-row>
-            <el-row :gutter="30" type="flex">
-              <el-col :lg="12"
-                ><el-form-item
-                  v-custom-input="event.zoom_meeting_id"
-                  class="vid-custom-input"
-                  label="ID"
-                  prop="zoom_meeting_id"
-                >
-                  <el-input
-                    v-model="event.zoom_meeting_id"
-                    type="text"
-                    auto-complete="off"
-                    prefix-icon="vid-icon--hash"
-                  ></el-input> </el-form-item
-              ></el-col>
-              <el-col :lg="12"
-                ><el-form-item
-                  v-custom-input="event.zoom_meeting_password"
-                  class="vid-custom-input"
-                  label="Password"
-                  prop="zoom_meeting_password"
-                >
-                  <el-input
-                    v-model="event.zoom_meeting_password"
-                    type="password"
-                    auto-complete="off"
-                    prefix-icon="vid-icon--lock"
                   ></el-input> </el-form-item
               ></el-col>
             </el-row>
           </div>
           <div class="vid-section">
             <h6>Event Details</h6>
-            <el-row v-if="event.event_name" type="flex" class="flex-wrap">
+            <el-row type="flex">
               <el-col :lg="24"
                 ><el-form-item
                   v-custom-input="event.event_name"
@@ -151,13 +65,12 @@
                     v-model="event.event_name"
                     type="text"
                     auto-complete="off"
-                    disabled
                     prefix-icon="vid-icon--edit-2"
                   ></el-input> </el-form-item
               ></el-col>
             </el-row>
             <el-row :gutter="30" type="flex" class="flex-wrap">
-              <el-col :lg="14"
+              <el-col :md="14"
                 ><el-form-item
                   v-custom-input="event.event_date"
                   class="vid-custom-input"
@@ -166,7 +79,6 @@
                 >
                   <el-date-picker
                     v-model="event.event_date"
-                    value-format=""
                     type="date"
                     format="dd-MMMM-yyyy"
                     prefix-icon="vid-icon--calendar"
@@ -175,13 +87,13 @@
               ></el-col>
               <el-col :lg="10"
                 ><el-form-item
-                  v-custom-input="event.start_time"
+                  v-custom-input="event.event_start_time"
                   class="vid-custom-input"
                   label="Time"
                   prop="event_start_time"
                 >
                   <el-time-select
-                    v-model="event.start_time"
+                    v-model="event.event_start_time"
                     :clearable="false"
                     :picker-options="{
                       start: '00:00',
@@ -213,7 +125,7 @@
                   v-custom-input="event.event_duration"
                   v-only-number
                   class="vid-custom-input"
-                  label="Duration (hours)"
+                  label="Duration"
                   prop="event_duration"
                 >
                   <el-input
@@ -225,13 +137,13 @@
               ></el-col>
               <el-col :lg="14"
                 ><el-form-item
-                  v-custom-input="event.event_ref"
+                  v-custom-input="event.event_public_url"
                   class="vid-custom-input"
                   label="Event Url: https://vidpages.com/"
                   prop="event_public_url"
                 >
                   <el-input
-                    v-model="event.event_ref"
+                    v-model="event.event_public_url"
                     type="text"
                     auto-complete="off"
                     prefix-icon="vid-icon--chrome"
@@ -243,6 +155,28 @@
             <h6>Accessibility</h6>
             <el-row :gutter="30" type="flex" class="flex-wrap">
               <el-col :lg="12">
+                <el-form-item
+                  v-custom-input="event.event_social_hashtag"
+                  class="vid-custom-input"
+                  label="Social Hashtag"
+                >
+                  <el-select
+                    v-model="event.event_social_hashtag"
+                    placeholder=""
+                  >
+                    <template slot="prefix">
+                      <i class="vid-icon--hash exp"></i>
+                    </template>
+                    <el-option
+                      v-for="(hashtag, index) in hashtags"
+                      :key="index"
+                      :label="hashtag"
+                      :value="hashtag"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :lg="6">
                 <el-form-item label="Is this a paid event?">
                   <el-switch
                     v-model="event.paid"
@@ -251,7 +185,7 @@
                   ></el-switch>
                 </el-form-item>
               </el-col>
-              <el-col :lg="12">
+              <el-col :lg="6">
                 <el-form-item label="Allow only RSVPs">
                   <el-switch
                     v-model="event.rsvp"
@@ -264,11 +198,11 @@
           </div>
           <div class="vid-section-create">
             <el-button
-              :loading="creatingEvent"
               type="primary"
               size="large"
-              @click="createEvent"
-              >Create</el-button
+              :loading="updatingEvent"
+              @click="updateEvent"
+              >Update</el-button
             >
           </div>
         </el-form>
@@ -278,137 +212,112 @@
       :show.sync="updateCoverImage"
       :background.sync="backgroundUrl"
     />
-    <el-dialog
-      :visible="choosePlan"
-      :close-on-click-modal="false"
-      @close="choosePlan = false"
-    ></el-dialog>
   </div>
 </template>
 
 <script>
-import request from '../controller/request'
-import Navbar from '~/components/Navbar'
+import request from '../../controller/request'
+import { convertCase } from '../../plugins/case-converter'
 import UpdateCoverImage from '~/components/BackgroundImage/UpdateCoverImage'
 
 export default {
-  name: 'CreateEvent',
+  name: 'UpdateEvent',
   components: {
-    Navbar,
     UpdateCoverImage
   },
   data() {
     return {
-      choosePlan: false,
-      ip: '',
-      plans: '',
-      videoProviders: [],
-      selectedVideoProvider: '',
       updateCoverImage: false,
       backgroundUrl: '',
       backgroundType: '',
       event: {
-        user_id: '',
-        event_banner: '',
-        event_name: '',
-        video_url: '',
         event_date: '',
-        start_time: '',
-        event_ref: '',
-        event_public_url: '',
-        event_payment_provider: '',
-        event_payment_provider_public: '',
-        event_payment_provider_secret: '',
-        event_video: '',
-        event_hashtag: '',
-        paid: 0,
-        rsvp: 0,
-        hide_registration: 0,
-        manual_approve: 0,
+        event_name: '',
+        event_start_time: '',
         event_duration: '',
-        video_provider: '',
-        zoom_meeting_id: '',
-        zoom_meeting_password: ''
+        paid: '',
+        rsvp: '',
+        event_ref: '',
+        event_video_url: '',
+        event_banner: '',
+        event_hashtag: ''
       },
-      hasStartTime: true,
-      creatingEvent: false
+      hashtags: [],
+      responseEvent: {},
+      updatingEvent: false
     }
   },
   computed: {
-    coverImage() {
-      return this.backgroundUrl && this.backgroundUrl.charAt(0) === '#'
-        ? 'color'
-        : 'others'
+    hasStartTime() {
+      return this.event.start_time !== ''
     },
-    videoCoverBg() {
-      const videoFormat = ['mp4', '3gp', 'mov']
-      let url
-      if (this.backgroundUrl) {
-        url = this.backgroundUrl.split('.')
-      }
-      return this.backgroundUrl && videoFormat.includes(url[url.length - 1])
+    storeEvent() {
+      return this.$store.state.event.event
     }
   },
-  created() {
-    this.fetchAllPlans()
-    this.fetchAllVideoProviders()
-    this.generateRef()
+  watch: {
+    storeEvent() {
+      this.setEventValues()
+    },
+    backgroundUrl() {
+      this.event.event_banner = this.backgroundUrl
+    }
   },
   methods: {
-    async fetchAllPlans() {
-      await request
-        .getPlans(this.ip)
-        .then((response) => {
-          if (response.data.success) {
-            this.plans = response.data.plans
-          }
-        })
-        .catch()
+    setBackgroundType() {
+      const videoFormat = ['mp4', 'mov', '3gp']
+      const imageFormat = ['jpg', 'jpeg', 'png']
+
+      const backgroundUrl = this.event.event_banner.split('.')
+
+      if (videoFormat.includes(backgroundUrl[backgroundUrl - 1])) {
+        this.backgroundType = 'video'
+      } else if (imageFormat.includes(backgroundUrl[backgroundUrl - 1])) {
+        this.backgroundType = 'image'
+      } else if (this.event.event_banner.charAt(0) === '#') {
+        this.backgroundType = 'color'
+      }
     },
-    async fetchAllVideoProviders() {
-      await request
-        .getVideoProviders()
-        .then((response) => {
-          if (response.data.success) {
-            this.videoProviders = response.data.providers
-          }
-        })
-        .catch()
+    async generateHashtag(eventName) {
+      await request.generateHashtag(eventName).then((response) => {
+        if (response.data.success) {
+          this.hashtags = response.data.hashtags
+        }
+      })
     },
-    async generateRef() {
-      await request
-        .generateEventRef()
-        .then((response) => {
-          if (response.data.success) {
-            this.event.event_ref = response.data.ref
-          }
-        })
-        .catch()
+    async setEventValues() {
+      const responseEvent = await this.$store.state.event.event
+      for (const key in responseEvent) {
+        const convertedKey = convertCase(key)
+        this.responseEvent[convertedKey] = responseEvent[key]
+      }
+      this.event = { ...this.responseEvent }
+      this.generateHashtag(this.event.event_name)
+      this.setBackgroundType()
     },
-    setVideoProvider(value) {
-      this.selectedVideoProvider = value
-    },
-    async createEvent() {
-      this.creatingEvent = true
-      this.event.event_banner = this.backgroundUrl
-      this.event.event_date = this.event.event_date.toString()
+    async updateEvent() {
+      this.updatingEvent = true
       await request
         .createEvent(this.event)
         .then((response) => {
           if (response.data.success) {
-            this.$message.success('Event created')
-            this.creatingEvent = false
-            this.$router.push({
-              name: 'manage-ref',
-              params: { ref: response.event_ref }
-            })
+            this.$store
+              .dispatch('EVENT', this.$route.params.ref)
+              .then((response) => {
+                this.$message.success('Event updated')
+                this.setEventValues()
+                this.updatingEvent = false
+              })
+              .catch(() => {
+                this.$message.error('Something went wrong')
+                this.updatingEvent = false
+              })
           } else {
-            this.creatingEvent = false
+            this.updatingEvent = false
           }
         })
         .catch(() => {
-          this.creatingEvent = false
-          this.$message.error('Something went wrong')
+          this.updatingEvent = false
         })
     }
   }
@@ -416,7 +325,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.vid-create {
+.vid-update {
   .vid-header {
     height: 550px;
     background: #222151;
@@ -424,6 +333,7 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    display: flex;
 
     video {
       height: 100%;
@@ -456,11 +366,11 @@ export default {
 
       .vid-event-title {
         position: absolute;
-        left: 0;
+        right: 50px;
         bottom: 50px;
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
 
         .vid-custom-input {
@@ -538,31 +448,20 @@ export default {
   }
 }
 
-@media (max-width: 1024px) {
-  .vid-event-form {
-    width: 90% !important;
-  }
-}
-
-@media (max-width: 992px) {
-  .vid-event-title {
-    flex-direction: column;
-  }
-}
-
 @media (max-width: 600px) {
-  .vid-header {
-    height: 350px !important;
+  .vid-update {
+    .vid-header {
+      height: 300px;
 
-    .vid-event-title {
-      left: 20px !important;
-      right: 20px;
-      margin: auto;
+      .vid-event-title {
+        right: 50% !important;
+        transform: translateX(-50%);
+      }
     }
-  }
 
-  .vid-event-form {
-    width: 100% !important;
+    .vid-event-form {
+      width: 100%;
+    }
   }
 }
 </style>

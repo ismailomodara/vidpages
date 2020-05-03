@@ -49,6 +49,10 @@
     transition: all 0.25s ease-out;
   }
 
+  .el-input.is-disabled .el-input__inner {
+    background-color: transparent;
+  }
+
   span.el-input__prefix {
    left: 20px;
 
@@ -59,6 +63,11 @@
       top: 4px;
       opacity: 0.5;
       transition: all 0.25s ease-in;
+    }
+
+    .exp {
+      top: 33%;
+      font-size: 1.2rem;
     }
   }
 
@@ -100,4 +109,118 @@
 //Color Picker
 .el-color-picker__trigger {
   width: 200px;
+}
+
+//Select
+.el-select {
+  width: 100%;
+}
+
+.el-date-editor.el-input, .el-date-editor.el-input__inner {
+  width: 100%
+}
+
+//Dialog
+.el-dialog {
+  border-radius: 10px;
+
+  .el-dialog__header {
+    padding: 40px;
+
+    span {
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      font-family: "Avenir", sans-serif;
+      font-weight: 500;
+    }
+  }
+
+  .el-dialog__body {
+    padding: 0 40px 40px;
+  }
+}
+
+.el-card {
+  border-radius: 8px;
+
+  &.is-always-shadow {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.el-timeline-item__node {
+  background: #7733f4 !important;
+}
+
+.el-input-group__append {
+  padding: 0;
+}
+
+.el-link.el-link--default:hover {
+  color: #222151;
+  text-decoration: none;
+}
+
+.vid-schedule {
+  .el-timeline-item__wrapper {
+    margin-bottom: 30px;
+  }
+
+  .el-timeline-item__timestamp {
+    font-weight: 600;
+  }
+
+  .el-timeline-item__content {
+    h4 {
+      font-size: 1.2rem;
+    }
+     p {
+       margin-bottom: 0;
+     }
+  }
+}
+
+.vid-user-home .el-dialog {
+  background: #f9f9fb;
+}
+
+@media (max-width: 1024px) {
+  .el-dialog {
+    margin-top: 0 !important;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 50vh;
+    width: 80% !important;
+
+    .el-dialog__body {
+      .el-row {
+        flex-direction: column;
+        width: 70%;
+        margin: auto !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .el-dialog {
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+
+    .el-dialog__body {
+      .el-row {
+        width: 100%;
+      }
+    }
+
+    .vid-bg-image {
+      margin-bottom: 30px;
+    }
+  }
+
+  .el-upload-dragger {
+    width: 280px;
+  }
 }

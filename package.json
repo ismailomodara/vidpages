@@ -15,6 +15,7 @@
     "@nuxtjs/axios": "^5.3.6",
     "bootstrap": "^4.4.1",
     "element-ui": "^2.4.11",
+    "js-cookie": "^2.2.1",
     "nuxt": "^2.0.0",
     "remove": "^0.1.5",
     "vue-ele-upload-video": "^2.0.5",

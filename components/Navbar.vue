@@ -1,8 +1,8 @@
 <template>
-  <div class="vid-nav">
+  <div class="vid-nav" :class="{ inverse: inverse }">
     <div class="container">
       <nuxt-link :to="{ name: 'index' }" class="vid-logo">
-        VidPages
+        Vidpages
       </nuxt-link>
     </div>
   </div>
@@ -11,6 +11,9 @@
 <script>
 export default {
   name: 'Navbar',
+  props: {
+    inverse: Boolean
+  },
   data() {
     return {
       email: ''
@@ -26,6 +29,14 @@ export default {
   width: 100%;
   height: 80px;
   background: #ffffff;
+
+  &.inverse {
+    background: #222151;
+
+    a {
+      color: #fff !important;
+    }
+  }
 
   .container {
     display: flex;

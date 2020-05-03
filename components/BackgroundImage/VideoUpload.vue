@@ -19,19 +19,9 @@
     </el-upload>
     <div v-if="videoUrl" v-loading="uploading" class="video-preview">
       <video :src="videoUrl" :autoplay="true" controls="controls"></video>
-      <div class="d-flex justify-content-center">
-        <el-upload
-          action=""
-          :on-change="uploadVideo"
-          :show-file-list="false"
-          drag
-        >
-          <el-button size="small" type="outline" class="mr-2">Change</el-button>
-        </el-upload>
-        <el-button size="small" type="outline" @click="emitBackground"
-          >Save</el-button
-        >
-      </div>
+      <el-button size="small" type="outline" @click="emitBackground"
+        >Save</el-button
+      >
     </div>
   </div>
 </template>
