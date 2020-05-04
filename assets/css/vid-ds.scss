@@ -141,6 +141,12 @@
   }
 }
 
+.loading-dialog .el-dialog {
+  height: 100% !important;
+  width: 100% !important;
+  border-radius: 0 !important;
+}
+
 .el-card {
   border-radius: 8px;
 
@@ -196,7 +202,7 @@
     margin-top: 0 !important;
     top: 50%;
     transform: translateY(-50%);
-    height: 50vh;
+    height: auto;
     width: 80% !important;
 
     .el-dialog__body {

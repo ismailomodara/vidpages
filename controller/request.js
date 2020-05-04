@@ -69,7 +69,19 @@ export default {
     return $axios.post('/like-event', { event_ref: eventRef })
   },
 
+  shareEvent(eventRef) {
+    return $axios.post('/share', { event_ref: eventRef })
+  },
+
   attendEvent(payload) {
     return $axios.post('/event-registration', payload)
+  },
+
+  createPlan(payload) {
+    return $axios.post('/create-plan', payload)
+  },
+
+  updatePaymentPlan(payload) {
+    return $axios.post('/create-plan', payload)
   }
 }

@@ -50,16 +50,24 @@
           class="vid-event-form"
         >
           <div class="vid-section">
-            <el-row v-if="event.video_provider">
+            <el-row v-if="loggedIn">
               <el-col :md="24">
                 <p>
                   You are signed in as
                   <strong>{{ event.user_email }}</strong> on
-                  {{ event.video_provider }}
+                  {{ selectedVideoProvider.provider }}
                 </p>
+                <div>
+                  <el-radio v-model="meetingChoice" label="1" border
+                    >Create Meeting For Me</el-radio
+                  >
+                  <el-radio v-model="meetingChoice" label="2" border
+                    >Manually Enter Details</el-radio
+                  >
+                </div>
               </el-col>
             </el-row>
-            <template v-if="!event.user_email">
+            <template v-if="!loggedIn">
               <h6>Video Provider</h6>
               <el-row type="flex" :gutter="40" class="flex-wrap">
                 <el-col :lg="12"
@@ -81,7 +89,7 @@
                         v-for="(provider, index) in videoProviders"
                         :key="index"
                         :label="provider.provider"
-                        :value="provider.provider.toLowerCase()"
+                        :value="index"
                       ></el-option>
                     </el-select> </el-form-item
                 ></el-col>
@@ -99,8 +107,19 @@
               </el-row>
             </template>
           </div>
-          <div v-if="event.video_provider" class="vid-section">
-            <h6>{{ event.video_provider }} Info</h6>
+          <div v-if="meetingChoice === '1'" class="vid-section">
+            <el-checkbox v-model="createMeeting.room"
+              >Use personal meeting room</el-checkbox
+            >
+            <el-checkbox v-model="createMeeting.password"
+              >Generate a password for the meeting</el-checkbox
+            >
+          </div>
+          <div
+            v-if="meetingChoice === '2' && selectedVideoProvider"
+            class="vid-section"
+          >
+            <h6>{{ selectedVideoProvider.provider }} Info</h6>
             <el-row :gutter="30" type="flex" class="flex-wrap">
               <el-col :lg="24"
                 ><el-form-item
@@ -118,7 +137,7 @@
               ></el-col>
             </el-row>
             <el-row
-              v-if="event.video_provider.toLowerCase() === 'zoom'"
+              v-if="selectedVideoProvider.provider.toLowerCase() === 'zoom'"
               :gutter="30"
               type="flex"
             >
@@ -323,6 +342,11 @@ export default {
       updateCoverImage: false,
       backgroundUrl: '',
       backgroundType: '',
+      meetingChoice: '',
+      createMeeting: {
+        room: false,
+        password: false
+      },
       event: {
         user_id: '',
         event_banner: '',
@@ -348,7 +372,8 @@ export default {
         user_email: ''
       },
       hasStartTime: true,
-      creatingEvent: false
+      creatingEvent: false,
+      loggedIn: false
     }
   },
   computed: {
@@ -367,7 +392,8 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.user_id) {
+    if (this.$route.query.user_id || Cookies.get('user')) {
+      this.loggedIn = true
       this.setProvider()
     }
     this.fetchAllPlans()
@@ -413,7 +439,7 @@ export default {
         .catch()
     },
     setVideoProvider(value) {
-      this.selectedVideoProvider = value
+      this.selectedVideoProvider = this.videoProviders[value]
     },
     async createEvent() {
       this.creatingEvent = true
@@ -563,6 +589,10 @@ export default {
     object-fit: contain;
     border-radius: 5px;
   }
+}
+
+.el-radio {
+  margin-right: 10px !important;
 }
 
 @media (max-width: 1024px) {

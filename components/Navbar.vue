@@ -47,6 +47,7 @@ export default {
         })
       } else if (command === 'logout') {
         Cookies.remove('user')
+        this.user = ''
         this.$router.push({ name: 'index' })
       }
     }

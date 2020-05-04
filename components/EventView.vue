@@ -39,6 +39,33 @@
                   @click="likeEvent"
                 />
               </div>
+              <el-dropdown>
+                <div v-loading="gettingSocialLinks" class="share-event">
+                  <img src="@/assets/img/share.svg" />
+                </div>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    ><a :href="social_share.whatsapp" target="_blank"
+                      >WhatsApp</a
+                    ></el-dropdown-item
+                  >
+                  <el-dropdown-item
+                    ><a :href="social_share.twitter" target="_blank"
+                      >Twitter</a
+                    ></el-dropdown-item
+                  >
+                  <el-dropdown-item
+                    ><a :href="social_share.linkdeln" target="_blank"
+                      >LinkedIn</a
+                    ></el-dropdown-item
+                  >
+                  <el-dropdown-item
+                    ><a :href="social_share.facebook" target="_blank"
+                      >Facebook</a
+                    ></el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
           </div>
           <div class="vid-event-calendar">
@@ -51,7 +78,7 @@
     <section class="vid-countdown">
       <div class="container">
         <p>Time left to event</p>
-        <h2>{{ time }}</h2>
+        <h2>{{ timeLeft }}</h2>
         <!--        <el-button type="secondary">Add To Calendar</el-button>-->
       </div>
     </section>
@@ -133,10 +160,16 @@
     <section ref="register" class="vid-cta">
       <div class="container">
         <p>Register for this event now!</p>
-        <el-input
-          v-model="attend.attendee_email"
-          class="input-with-select"
-        ></el-input>
+        <el-form
+          ref="attendForm"
+          :model="attend"
+          :rules="rules"
+          label-position="top"
+        >
+          <el-form-item label="" prop="attendee_email">
+            <el-input v-model="attend.attendee_email"></el-input>
+          </el-form-item>
+        </el-form>
         <el-button
           :loading="attending"
           type="white"
@@ -147,15 +180,12 @@
       </div>
     </section>
     <el-dialog
+      v-loading="showLoaderDialog"
+      class="loading-dialog"
       :visible="showLoaderDialog"
       :fullscreen="true"
       :show-close="false"
-    >
-      <div
-        v-loading="showLoaderDialog"
-        :style="{ height: '80vh', width: '100%' }"
-      ></div>
-    </el-dialog>
+    ></el-dialog>
   </div>
 </template>
 
@@ -182,6 +212,7 @@ export default {
         'December'
       ],
       now: new Date().getTime(),
+      timeLeft: '',
       showLoaderDialog: true,
       event: {},
       speakers: [],
@@ -192,12 +223,45 @@ export default {
         attendee_email: '',
         event_ref: ''
       },
+      rules: {
+        attendee_email: [
+          {
+            required: true,
+            message: 'Please enter email address',
+            trigger: 'change'
+          },
+          {
+            type: 'email',
+            message: 'Invalid email',
+            trigger: ['blur']
+          }
+        ]
+      },
       like: false,
-      attending: false
+      attending: false,
+      gettingSocialLinks: false,
+      social_share: {
+        whatsapp: '',
+        twitter: '',
+        facebook: '',
+        linkdeln: ''
+      }
     }
   },
-  computed: {
-    time() {
+  computed: {},
+  created() {
+    this.showLoaderDialog = true
+    if (this.$route.params.eventRef) {
+      this.getEvent()
+    } else {
+      this.$router.push({ name: 'index' })
+    }
+  },
+  methods: {
+    scrollTo(ref) {
+      this.$refs[ref].scrollIntoView()
+    },
+    countdown() {
       const timeLeft = new Date(this.event.eventDate).getTime() - this.now
 
       const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
@@ -210,22 +274,7 @@ export default {
       if (timeLeft < 0) {
         return '00 : 00 : 00 : 00'
       }
-
-      return `${days} : ${hours} : ${minutes} : ${seconds}`
-    }
-  },
-  created() {
-    this.showLoaderDialog = true
-    if (this.$route.params.eventRef) {
-      this.getEvent()
-    } else {
-      this.$router.push({ name: 'index' })
-    }
-  },
-  mounted() {},
-  methods: {
-    scrollTo(ref) {
-      this.$refs[ref].scrollIntoView()
+      this.timeLeft = `${days} : ${hours} : ${minutes} : ${seconds}`
     },
     setBackgroundType() {
       const videoFormat = ['mp4', 'mov', '3gp']
@@ -255,6 +304,7 @@ export default {
           this.gallery = response.data.images
           this.attend.event_ref = response.data.event.eventRef
           this.setBackgroundType()
+          this.shareEvent()
         }
       })
     },
@@ -265,17 +315,30 @@ export default {
         }
       })
     },
-    attendEvent() {
-      this.attending = true
-      request.attendEvent(this.attend).then((response) => {
+    shareEvent() {
+      request.shareEvent(this.event.eventRef).then((response) => {
         if (response.data.success) {
-          this.$message.success(
-            'Your request to attend this event has been submitted'
-          )
-          this.attend.attendee_email = ''
-          this.attending = false
+          this.social_share = { ...response.data }
+        }
+      })
+    },
+    attendEvent() {
+      this.$refs.attendForm.validate((valid) => {
+        if (valid) {
+          this.attending = true
+          request.attendEvent(this.attend).then((response) => {
+            if (response.data.success) {
+              this.$message.success(
+                'Your request to attend this event has been submitted'
+              )
+              this.attend.attendee_email = ''
+              this.attending = false
+            } else {
+              this.attending = false
+            }
+          })
         } else {
-          this.attending = false
+          return false
         }
       })
     }
@@ -321,7 +384,8 @@ export default {
       height: 100%;
       z-index: 2;
 
-      .like-event {
+      .like-event,
+      .share-event {
         margin-left: 10px;
         cursor: pointer;
         height: 55px;
@@ -347,10 +411,10 @@ export default {
         align-items: center;
 
         h1 {
-          font-size: 5rem;
+          font-size: 4.5rem;
           font-weight: 600;
           margin-bottom: 5px;
-          width: 80%;
+          width: 100%;
           line-height: 1.4;
         }
 
@@ -502,6 +566,14 @@ export default {
   .vid-cta {
     background: #222151;
 
+    .el-form {
+      width: 50%;
+
+      .el-form-item__content .el-input {
+        width: 100%;
+      }
+    }
+
     p {
       color: #fff;
       margin-bottom: 15px;
@@ -514,7 +586,7 @@ export default {
 
       .el-input {
         width: 50%;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
       }
     }
   }
@@ -563,6 +635,10 @@ export default {
 
   .vid-gallery-container img {
     width: calc(47% - 20px) !important;
+  }
+
+  .vid-cta .el-form {
+    width: 100% !important;
   }
 }
 

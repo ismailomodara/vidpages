@@ -47,15 +47,12 @@
       </div>
     </div>
     <el-dialog
+      v-loading="showLoaderDialog"
+      class="loading-dialog"
       :visible="showLoaderDialog"
       :fullscreen="true"
       :show-close="false"
-    >
-      <div
-        v-loading="showLoaderDialog"
-        :style="{ height: '80vh', width: '100%' }"
-      ></div>
-    </el-dialog>
+    ></el-dialog>
   </div>
 </template>
 
