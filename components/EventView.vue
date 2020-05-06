@@ -21,12 +21,16 @@
       <div class="container">
         <div class="vid-event-title">
           <div>
+            <p class="event-status">{{ event.eventStatus }}</p>
             <h1>{{ event.eventName }}</h1>
             <el-button type="white" @click="scrollTo('register')"
               >Register For This Event</el-button
             >
             <div class="d-flex align-items-center mt-2">
-              <h5 class="mb-0">0 People are attending</h5>
+              <h5 v-if="attendees.length" class="mb-0">
+                {{ attendees.length }}
+                {{ attendees.length > 1 ? 'People' : 'Person' }} are attending
+              </h5>
               <div class="like-event">
                 <img
                   v-if="like"
@@ -79,7 +83,16 @@
       <div class="container">
         <p>Time left to event</p>
         <h2>{{ timeLeft }}</h2>
-        <!--        <el-button type="secondary">Add To Calendar</el-button>-->
+        <el-dropdown>
+          <el-button type="outline">Add To Calendar</el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(calendar, index) in calendars"
+              :key="index"
+              ><a :href="calendar.url" target="_blank">{{ calendar.name }}</a>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </section>
     <section v-if="speakers.length" class="vid-speakers">
@@ -157,7 +170,35 @@
         </div>
       </div>
     </section>
-    <section ref="register" class="vid-cta">
+    <section v-if="plans.length" class="vid-plans">
+      <div class="container">
+        <h4 class="section-heading">PLANS</h4>
+        <el-row type="flex" class="flex-wrap mt-5" :gutter="30">
+          <el-col
+            v-for="(plan, index) in plans"
+            :key="index"
+            :xs="24"
+            :sm="12"
+            :md="8"
+          >
+            <div class="vid-attendees-container">
+              <div class="payment-plan">
+                <h4>{{ plan.eventPlanName }}</h4>
+                <h2>{{ plan.eventPlanCurrency }} {{ plan.eventPlanAmount }}</h2>
+                <p>{{ plan.eventPlanDetails }}</p>
+                <el-button
+                  size="small"
+                  type="white"
+                  @click="setAttendeePlan(plan.eventPlanRef)"
+                  >Pay To Attend</el-button
+                >
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </section>
+    <section v-if="!plans.length" ref="register" class="vid-cta">
       <div class="container">
         <p>Register for this event now!</p>
         <el-form
@@ -179,6 +220,32 @@
         >
       </div>
     </section>
+    <el-dialog :visible.sync="showPaymentDialog">
+      <div v-loading="paying" class="payment-form">
+        <el-form ref="payToAttendForm" :model="attend" :rules="rules">
+          <h5 class="mb-3">Provide your email address</h5>
+          <el-row :gutter="30" type="flex" class="flex-wrap">
+            <el-col :lg="24"
+              ><el-form-item
+                v-custom-input="attend.attendee_email"
+                class="vid-custom-input"
+                label="Your email"
+                prop="attendee_email"
+              >
+                <el-input
+                  v-model="attend.attendee_email"
+                  type="text"
+                  auto-complete="on"
+                  prefix-icon="vid-icon--at-sign"
+                ></el-input> </el-form-item
+            ></el-col>
+          </el-row>
+          <div class="d-flex justify-content-center">
+            <el-button type="primary" @click="payAndAttend">Pay</el-button>
+          </div>
+        </el-form>
+      </div>
+    </el-dialog>
     <el-dialog
       v-loading="showLoaderDialog"
       class="loading-dialog"
@@ -219,6 +286,8 @@ export default {
       schedule: [],
       sponsors: [],
       gallery: [],
+      attendees: [],
+      plans: [],
       attend: {
         attendee_email: '',
         event_ref: ''
@@ -239,16 +308,44 @@ export default {
       },
       like: false,
       attending: false,
+      paying: false,
+      showPaymentDialog: false,
       gettingSocialLinks: false,
       social_share: {
         whatsapp: '',
         twitter: '',
         facebook: '',
         linkdeln: ''
-      }
+      },
+      clientIdCalender: 'afXHuZxmQzqnsQSJXmZx86885'
     }
   },
-  computed: {},
+  computed: {
+    calendars() {
+      return [
+        {
+          name: 'Google',
+          url: `https://www.addevent.com/dir/?client=${this.clientIdCalender}&start=${this.event.eventDate}&title=${this.event.eventName}&description=Description+of+the+event&location=${this.event.eventVideo}&service=google`
+        },
+        {
+          name: 'Apple',
+          url: `https://www.addevent.com/dir/?client=${this.clientIdCalender}&start=${this.event.eventDate}&title=${this.event.eventName}&description=Description+of+the+event&location=${this.event.eventVideo}&service=apple`
+        },
+        {
+          name: 'Office 365',
+          url: `https://www.addevent.com/dir/?client=${this.clientIdCalender}&start=${this.event.eventDate}&title=${this.event.eventName}&description=Description+of+the+event&location=${this.event.eventVideo}&service=office365`
+        },
+        {
+          name: 'Outlook',
+          url: `https://www.addevent.com/dir/?client=${this.clientIdCalender}&start=${this.event.eventDate}&title=${this.event.eventName}&description=Description+of+the+event&location=${this.event.eventVideo}&service=outlook`
+        },
+        {
+          name: 'Yahoo',
+          url: `https://www.addevent.com/dir/?client=${this.clientIdCalender}&start=${this.event.eventDate}&title=${this.event.eventName}&description=Description+of+the+event&location=${this.event.eventVideo}&service=yahoo`
+        }
+      ]
+    }
+  },
   created() {
     this.showLoaderDialog = true
     if (this.$route.params.eventRef) {
@@ -302,6 +399,8 @@ export default {
           this.schedule = response.data.schedule
           this.sponsors = response.data.sponsors
           this.gallery = response.data.images
+          this.attendees = response.data.attendees
+          this.plans = response.data.plans
           this.attend.event_ref = response.data.event.eventRef
           this.setBackgroundType()
           this.shareEvent()
@@ -335,6 +434,31 @@ export default {
               this.attending = false
             } else {
               this.attending = false
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    setAttendeePlan(payRef) {
+      this.showPaymentDialog = true
+      this.attend.plan_ref = payRef
+    },
+    payAndAttend() {
+      this.$refs.payToAttendForm.validate((valid) => {
+        if (valid) {
+          this.paying = true
+          request.payForEvent(this.attend).then((response) => {
+            if (response.data.success) {
+              this.$message.success(
+                'Your payment to attend this event has been received'
+              )
+              this.attend.attendee_email = ''
+              this.attend.plan_ref = ''
+              this.paying = false
+            } else {
+              this.paying = false
             }
           })
         } else {
@@ -409,6 +533,25 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        .event-status {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin-bottom: 0;
+          position: relative;
+          padding-left: 20px;
+
+          &::before {
+            content: '';
+            position: absolute;
+            height: 10px;
+            width: 10px;
+            border-radius: 100px;
+            background: #fff;
+            top: 9px;
+            left: 0;
+          }
+        }
 
         h1 {
           font-size: 4.5rem;
@@ -563,6 +706,37 @@ export default {
     }
   }
 
+  .vid-plans {
+    .payment-plan {
+      background: #222151;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      text-align: center;
+      padding: 50px 30px;
+      color: #fff;
+      margin-bottom: 30px;
+
+      h4 {
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      p {
+        font-size: 0.9rem;
+        width: 70%;
+        line-height: 1.6;
+        margin: 0 auto 20px;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+        font-weight: 600;
+      }
+    }
+  }
   .vid-cta {
     background: #222151;
 
@@ -590,6 +764,11 @@ export default {
       }
     }
   }
+}
+
+.payment-form .el-form {
+  width: 80%;
+  margin: auto;
 }
 
 @media (max-width: 1024px) {

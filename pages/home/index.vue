@@ -3,8 +3,18 @@
     <navbar :inverse="true" />
     <div class="vid-header">
       <div class="container">
-        <h1>Hello {{ user.userId || userId }}</h1>
-        <el-button size="small" type="white">Create Event</el-button>
+        <h1>
+          Hello
+          <span v-if="user && userDetails">{{
+            JSON.parse(userDetails).firstName
+          }}</span>
+          <span v-else>
+            Friend
+          </span>
+        </h1>
+        <el-button size="small" type="white" @click="createEvent"
+          >Create Event</el-button
+        >
       </div>
     </div>
     <div class="vid-home-body">
@@ -46,12 +56,20 @@
                   </div>
                   <div class="d-flex flex-column align-items-end">
                     <span>0 <img src="@/assets/img/like.svg"/></span>
-                    <el-button
-                      type="outline"
-                      size="small"
-                      @click="manageEvent(event.eventRef)"
-                      >Manage</el-button
-                    >
+                    <div>
+                      <el-button
+                        type="secondary"
+                        size="small"
+                        @click="viewEvent(event.eventRef)"
+                        >View</el-button
+                      >
+                      <el-button
+                        type="outline"
+                        size="small"
+                        @click="manageEvent(event.eventRef)"
+                        >Edit</el-button
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
@@ -61,12 +79,13 @@
       </div>
     </div>
     <el-dialog
+      class="loading-dialog"
       :visible="showLoaderDialog"
       :fullscreen="true"
       :show-close="false"
     >
       <div v-loading="fetchingDetails" class="user-id-form">
-        <el-form :model="user">
+        <el-form v-if="!idExist" :model="user">
           <h5 class="mb-3">Continue with your UserId</h5>
           <el-row :gutter="30" type="flex" class="flex-wrap">
             <el-col :lg="24"
@@ -96,6 +115,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import request from '../../controller/request'
 import Navbar from '~/components/Navbar'
 
@@ -106,22 +126,29 @@ export default {
   },
   data() {
     return {
-      showLoaderDialog: false,
+      showLoaderDialog: true,
       fetchingDetails: false,
       user: {
         userId: ''
       },
-      userId: this.$route.params.userId,
+      idExist: false,
       backgroundType: '',
       events: []
     }
   },
-  computed: {},
+  computed: {
+    user_id() {
+      return Cookies.get('user_id')
+    },
+    userDetails() {
+      return Cookies.get('user')
+    }
+  },
   created() {
-    if (this.$route.params.userId) {
-      this.getUserEvents(this.$route.params.userId)
-    } else {
-      this.showLoaderDialog = true
+    const userId = Cookies.get('user_id')
+    if (userId) {
+      this.idExist = true
+      this.getUserEvents(userId)
     }
   },
   methods: {
@@ -150,7 +177,7 @@ export default {
       })
     },
     async getUserEvents(userId) {
-      if (this.user.userId === '' || userId === '') {
+      if (userId === '') {
         this.$message.error('Please provide UserId!')
       } else {
         this.fetchingDetails = true
@@ -161,12 +188,22 @@ export default {
               this.events = response.data.events
               this.fetchingDetails = false
               this.showLoaderDialog = false
+              if (!Cookies.get('user_id')) {
+                Cookies.set('user_id', this.user.userId)
+                Cookies.set('user', response.data.userInfo)
+              }
             }
           })
           .catch(() => {
             this.$message.error('An error occurred!')
           })
       }
+    },
+    createEvent() {
+      this.$router.push({ name: 'create' })
+    },
+    viewEvent(ref) {
+      this.$router.push({ name: 'event-eventRef', params: { eventRef: ref } })
     },
     manageEvent(ref) {
       this.$router.push({ name: 'manage-ref', params: { ref } })
@@ -250,10 +287,12 @@ export default {
       align-items: flex-start;
 
       > div {
-        width: 60%;
+        width: 50%;
       }
 
       > div:last-child {
+        width: 60%;
+
         span {
           margin-bottom: 8px;
         }
@@ -282,6 +321,12 @@ export default {
     .el-form {
       width: 40%;
     }
+  }
+}
+
+@media (max-width: 1200px) {
+  .user-id-form .el-form {
+    width: 100% !important;
   }
 }
 

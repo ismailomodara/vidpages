@@ -32,6 +32,7 @@
         <el-menu-item index="speakers">Speakers</el-menu-item>
         <el-menu-item index="sponsors">Sponsors</el-menu-item>
         <el-menu-item index="schedule">Schedule</el-menu-item>
+        <el-menu-item index="questions">Questions</el-menu-item>
         <el-menu-item index="gallery">Gallery</el-menu-item>
         <el-menu-item index="payment">Payment</el-menu-item>
       </el-menu>
@@ -42,6 +43,7 @@
         <Speakers v-show="activeIndex === 'speakers'" />
         <Sponsors v-show="activeIndex === 'sponsors'" />
         <Schedules v-show="activeIndex === 'schedule'" />
+        <Question v-show="activeIndex === 'questions'" />
         <Gallery v-show="activeIndex === 'gallery'" />
         <Payment v-show="activeIndex === 'payment'" />
       </div>
@@ -62,6 +64,7 @@ import UpdateEvent from '~/components/Manage/UpdateEvent'
 import Speakers from '~/components/Manage/Speakers'
 import Sponsors from '~/components/Manage/Sponsors'
 import Schedules from '~/components/Manage/Schedules'
+import Question from '~/components/Manage/Questions'
 import Gallery from '~/components/Manage/Gallery'
 import Payment from '~/components/Manage/Payment'
 
@@ -73,6 +76,7 @@ export default {
     Speakers,
     Sponsors,
     Schedules,
+    Question,
     Gallery,
     Payment
   },

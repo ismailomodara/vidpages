@@ -77,11 +77,24 @@ export default {
     return $axios.post('/event-registration', payload)
   },
 
+  payForEvent(payload) {
+    return $axios.post('/pay', payload)
+  },
+
   createPlan(payload) {
     return $axios.post('/create-plan', payload)
   },
 
   updatePaymentPlan(payload) {
     return $axios.post('/create-plan', payload)
+  },
+
+  // Questions
+  addQuestion(payload) {
+    return $axios.post('/create-event-questions', payload)
+  },
+
+  updateQuestion(payload) {
+    return $axios.post('/create-event-questions', payload)
   }
 }

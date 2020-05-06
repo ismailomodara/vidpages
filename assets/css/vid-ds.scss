@@ -248,8 +248,9 @@
     width: 100%;
     border-radius: 0;
 
-    &:not(.is-fullscreen) {}
     .el-dialog__body {
+      padding: 0 20px 20px;
+
       .el-row {
         width: 100%;
       }
