@@ -2,13 +2,12 @@
   <div class="vid-nav" :class="{ inverse: inverse }">
     <div class="container">
       <nuxt-link :to="{ name: 'index' }" class="vid-logo">
-        Vidpages
+        Vidrl
       </nuxt-link>
       <div class="nav-links">
-        <a v-if="$route.name === 'index'" :href="blog">Blog</a>
-        <a :href="help_center">Help Center</a>
-        <a v-if="$route.name !== 'index'" href="">Changelog</a>
-        <span v-if="$route.name === 'manage-ref'" class="headway"></span>
+        <a v-if="$route.name === 'index'" :href="blog" target="_blank">Blog</a>
+        <a :href="help_center" target="_blank">Help Center</a>
+        <VidHeadwayWidget v-if="$route.name === 'manage-ref'" />
         <p v-if="user && user_id">
           <el-dropdown @command="command">
             <span class="el-dropdown-link">
@@ -28,9 +27,13 @@
 
 <script>
 import Cookies from 'js-cookie'
+import VidHeadwayWidget from './Headway'
 
 export default {
   name: 'Navbar',
+  components: {
+    VidHeadwayWidget
+  },
   props: {
     inverse: Boolean
   },
@@ -60,22 +63,10 @@ export default {
       } else if (command === 'logout') {
         Cookies.remove('user_id')
         Cookies.remove('user')
+        this.user = ''
+        this.user_id = ''
         this.$router.push({ name: 'index' })
       }
-    }
-  },
-  head() {
-    return {
-      script: [
-        {
-          src: 'https://cdn.headwayapp.co/widget.js'
-        },
-        {
-          type: 'text/javascript',
-          body: true,
-          defer: true
-        }
-      ]
     }
   }
 }

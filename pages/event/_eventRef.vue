@@ -1,17 +1,13 @@
 <template>
   <div>
-    <EventView v-if="!showLoaderDialog"></EventView>
+    <EventView :show.sync="showLoaderDialog" />
     <el-dialog
+      v-loading="showLoaderDialog"
+      class="loading-dialog"
       :visible="showLoaderDialog"
       :fullscreen="true"
       :show-close="false"
-    >
-      <div
-        v-loading="showLoaderDialog"
-        element-loading-text="Loading event..."
-        :style="{ height: '80vh', width: '100%' }"
-      ></div>
-    </el-dialog>
+    ></el-dialog>
   </div>
 </template>
 
@@ -25,30 +21,10 @@ export default {
   },
   data() {
     return {
-      showLoaderDialog: false
+      showLoaderDialog: true
     }
   },
-  created() {
-    // const eventRef = this.$route.params.eventRef
-    // if (eventRef) {
-    //   this.getEvent(eventRef)
-    // } else {
-    //   this.$router.push({ name: 'index' })
-    // }
-  },
-  methods: {
-    getEvent(eventRef) {
-      this.$store
-        .dispatch('EVENT', eventRef)
-        .then((response) => {
-          this.showLoaderDialog = false
-        })
-        .catch(() => {
-          this.$router.push({ name: 'index' })
-          this.$message.error('Unable to get event')
-          this.showLoaderDialog = false
-        })
-    }
-  }
+  created() {},
+  methods: {}
 }
 </script>

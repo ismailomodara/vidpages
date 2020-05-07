@@ -21,7 +21,9 @@
                 <el-button
                   type="white"
                   class="ml-4"
-                  @click="$router.push({ name: 'create' })"
+                  @click="
+                    $router.push({ name: 'create', params: { type: 'new' } })
+                  "
                   >Continue as a Guest</el-button
                 >
               </div>
@@ -151,11 +153,18 @@
           </div>
           <hr />
           <div>
-            <p>copyright © {{ date }} - Vidpages. All rights reserved.</p>
+            <p>copyright © {{ date }} - Vidrl. All rights reserved.</p>
           </div>
         </div>
       </section>
     </div>
+    <el-dialog
+      v-loading="loadingPage"
+      class="loading-dialog"
+      :visible="loadingPage"
+      :fullscreen="true"
+      :show-close="false"
+    ></el-dialog>
   </div>
 </template>
 
@@ -170,6 +179,7 @@ export default {
   },
   data() {
     return {
+      loadingPage: true,
       plans: [],
       videoProviders: [],
       date: new Date().getFullYear()
@@ -178,25 +188,26 @@ export default {
   computed: {},
   created() {
     this.fetchAllVideoProviders()
-    this.fetchAllPlans()
   },
   methods: {
-    async fetchAllPlans() {
-      await request
-        .getPlans()
-        .then((response) => {
-          if (response.data.success) {
-            this.plans = response.data.plans
-          }
-        })
-        .catch()
-    },
     async fetchAllVideoProviders() {
       await request
         .getVideoProviders()
         .then((response) => {
           if (response.data.success) {
             this.videoProviders = response.data.providers
+            this.fetchAllPlans()
+          }
+        })
+        .catch()
+    },
+    async fetchAllPlans() {
+      await request
+        .getPlans()
+        .then((response) => {
+          if (response.data.success) {
+            this.plans = response.data.plans
+            this.loadingPage = false
           }
         })
         .catch()

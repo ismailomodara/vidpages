@@ -50,14 +50,17 @@
           class="vid-event-form"
         >
           <div class="vid-section">
-            <el-row v-if="loggedIn">
+            <el-row v-if="isLoggedInVia">
               <el-col :md="24">
                 <p>
-                  You are signed in as
-                  <strong>{{ event.user_email }}</strong> on
-                  {{ selectedVideoProvider.provider }}
+                  You are signed in via
+                  <strong>{{
+                    selectedVideoProvider.provider.toUpperCase()
+                  }}</strong>
                 </p>
-                <div>
+                <div
+                  v-if="selectedVideoProvider.provider.toLowerCase() === 'zoom'"
+                >
                   <el-radio v-model="meetingChoice" label="1" border
                     >Create Meeting For Me</el-radio
                   >
@@ -67,7 +70,7 @@
                 </div>
               </el-col>
             </el-row>
-            <template v-if="!loggedIn">
+            <template v-if="!isLoggedInVia">
               <h6>Video Provider</h6>
               <el-row type="flex" :gutter="40" class="flex-wrap">
                 <el-col :lg="12"
@@ -94,7 +97,10 @@
                     </el-select> </el-form-item
                 ></el-col>
                 <el-col :lg="12">
-                  <div v-if="selectedVideoProvider" class="video-provider">
+                  <div
+                    v-if="selectedVideoProvider.oauthUrl"
+                    class="video-provider"
+                  >
                     <p>
                       Sign in with {{ selectedVideoProvider.provider }} and we'd
                       link it up automatically
@@ -116,7 +122,7 @@
             >
           </div>
           <div
-            v-if="meetingChoice === '2' && selectedVideoProvider"
+            v-if="meetingChoice === '2' || selectedVideoProvider"
             class="vid-section"
           >
             <h6>{{ selectedVideoProvider.provider }} Info</h6>
@@ -261,7 +267,7 @@
                 ><el-form-item
                   v-custom-input="event.event_ref"
                   class="vid-custom-input"
-                  label="Event Url: https://vidpages.com/"
+                  label="Event Url: https://vidrl.com/"
                   prop="event_public_url"
                 >
                   <el-input
@@ -276,7 +282,7 @@
           <div class="vid-section">
             <h6>Accessibility</h6>
             <el-row :gutter="30" type="flex" class="flex-wrap">
-              <el-col :lg="12">
+              <el-col :lg="8">
                 <el-form-item label="Is this a paid event?">
                   <el-switch
                     v-model="event.paid"
@@ -285,10 +291,19 @@
                   ></el-switch>
                 </el-form-item>
               </el-col>
-              <el-col :lg="12">
+              <el-col :lg="8">
                 <el-form-item label="Allow only RSVPs">
                   <el-switch
                     v-model="event.rsvp"
+                    :active-value="1"
+                    :inactive-value="0"
+                  ></el-switch>
+                </el-form-item>
+              </el-col>
+              <el-col :lg="8" v-if="event.rsvp === 1">
+                <el-form-item label="Manually Approve RSVPs">
+                  <el-switch
+                    v-model="event.manual_approve"
                     :active-value="1"
                     :inactive-value="0"
                   ></el-switch>
@@ -373,7 +388,7 @@ export default {
       },
       hasStartTime: true,
       creatingEvent: false,
-      loggedIn: false
+      isLoggedInVia: false
     }
   },
   computed: {
@@ -392,8 +407,8 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.user_id || Cookies.get('user')) {
-      this.loggedIn = true
+    if (this.$route.query.user_id) {
+      this.isLoggedInVia = true
       this.setProvider()
     }
     this.fetchAllPlans()
@@ -403,10 +418,17 @@ export default {
   methods: {
     setProvider() {
       const data = this.$route.query
-      Cookies.set('user', JSON.stringify(data))
-      this.event.user_id = data.user_id
-      this.event.user_email = data.email
-      this.event.video_provider = data.provider
+      if (data) {
+        Cookies.set('user', JSON.stringify(data))
+        this.event.user_id = data.user_id
+        this.event.user_email = data.email
+        this.event.video_provider = data.provider
+        this.selectedVideoProvider = {
+          provider: data.provider
+        }
+      } else {
+        console.log(JSON.parse(Cookies.get('user')))
+      }
     },
     async fetchAllPlans() {
       await request

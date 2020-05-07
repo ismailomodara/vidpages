@@ -19,7 +19,7 @@
       </el-row>
       <el-row type="flex" class="flex-wrap" :gutter="30">
         <el-col :sm="24" :md="12">
-          <el-form-item label="Amount" v-only-number prop="plan_amount">
+          <el-form-item v-only-number label="Amount" prop="plan_amount">
             <el-input
               v-model="newPaymentPlan.plan_amount"
               type="text"

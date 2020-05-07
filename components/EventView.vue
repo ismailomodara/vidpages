@@ -29,7 +29,7 @@
             <div class="d-flex align-items-center mt-2">
               <h5 v-if="attendees.length" class="mb-0">
                 {{ attendees.length }}
-                {{ attendees.length > 1 ? 'People' : 'Person' }} are attending
+                {{ attendees.length > 1 ? 'people' : 'person' }} attending
               </h5>
               <div class="like-event">
                 <img
@@ -246,13 +246,6 @@
         </el-form>
       </div>
     </el-dialog>
-    <el-dialog
-      v-loading="showLoaderDialog"
-      class="loading-dialog"
-      :visible="showLoaderDialog"
-      :fullscreen="true"
-      :show-close="false"
-    ></el-dialog>
   </div>
 </template>
 
@@ -261,7 +254,9 @@ import request from '../controller/request'
 
 export default {
   name: 'EventView',
-  components: {},
+  props: {
+    show: Boolean
+  },
   data() {
     return {
       backgroundType: '',
@@ -321,6 +316,14 @@ export default {
     }
   },
   computed: {
+    showDialog: {
+      get() {
+        return this.show
+      },
+      set(value) {
+        this.$emit('update:show', value)
+      }
+    },
     calendars() {
       return [
         {
@@ -347,7 +350,6 @@ export default {
     }
   },
   created() {
-    this.showLoaderDialog = true
     if (this.$route.params.eventRef) {
       this.getEvent()
     } else {
@@ -404,6 +406,11 @@ export default {
           this.attend.event_ref = response.data.event.eventRef
           this.setBackgroundType()
           this.shareEvent()
+          this.showDialog = false
+        } else {
+          this.$message.error('Unable to get requested Event.')
+          this.$router.push({ name: 'index' })
+          this.showDialog = false
         }
       })
     },

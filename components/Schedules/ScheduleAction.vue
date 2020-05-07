@@ -1,9 +1,9 @@
 <template>
   <el-dialog
-    @click="resetValues"
     width="40%"
     :visible.sync="showDialog"
     :title="action === 'add' ? 'Add New Schedule' : 'Update Schedule Details'"
+    @click="resetValues"
   >
     <el-form :model="newSchedule">
       <el-row type="flex">

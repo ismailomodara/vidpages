@@ -1,6 +1,6 @@
-# vidpages
+# vidrl
 
-> Vidpages
+> Vidrl
 
 ## Build Setup
 

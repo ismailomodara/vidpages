@@ -5,9 +5,7 @@
       <div class="container">
         <h1>
           Hello
-          <span v-if="user && userDetails">{{
-            JSON.parse(userDetails).firstName
-          }}</span>
+          <span v-if="user && userDetails">{{ userDetails.firstName }}</span>
           <span v-else>
             Friend
           </span>
@@ -133,17 +131,12 @@ export default {
       },
       idExist: false,
       backgroundType: '',
-      events: []
+      events: [],
+      user_id: '',
+      userDetails: ''
     }
   },
-  computed: {
-    user_id() {
-      return Cookies.get('user_id')
-    },
-    userDetails() {
-      return Cookies.get('user')
-    }
-  },
+  computed: {},
   created() {
     const userId = Cookies.get('user_id')
     if (userId) {
@@ -189,9 +182,11 @@ export default {
               this.fetchingDetails = false
               this.showLoaderDialog = false
               if (!Cookies.get('user_id')) {
-                Cookies.set('user_id', this.user.userId)
+                Cookies.set('user_id', userId)
                 Cookies.set('user', response.data.userInfo)
               }
+              this.user_id = userId
+              this.userDetails = response.data.userInfo
             }
           })
           .catch(() => {

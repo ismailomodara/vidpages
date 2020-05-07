@@ -139,7 +139,7 @@
                 ><el-form-item
                   v-custom-input="event.event_public_url"
                   class="vid-custom-input"
-                  label="Event Url: https://vidpages.com/"
+                  label="Event Url: https://vidrl.com/"
                   prop="event_public_url"
                 >
                   <el-input
@@ -274,7 +274,8 @@ export default {
         this.backgroundType = 'video'
       } else if (
         imageFormat.includes(backgroundUrl[backgroundUrl - 1]) ||
-        this.event.event_banner.includes('unsplash')
+        this.event.event_banner.includes('unsplash') ||
+        this.backgroundUrl.includes('unsplash')
       ) {
         this.backgroundType = 'image'
       } else if (this.event.event_banner.charAt(0) === '#') {
