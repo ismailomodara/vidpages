@@ -69,6 +69,22 @@
                   ></el-input> </el-form-item
               ></el-col>
             </el-row>
+            <el-row type="flex" class="flex-wrap">
+              <el-col :lg="24"
+                ><el-form-item
+                  v-custom-input="event.event_details"
+                  class="vid-custom-input"
+                  label="Event Description"
+                  prop="event_details"
+                >
+                  <el-input
+                    v-model="event.event_details"
+                    type="text"
+                    auto-complete="off"
+                    prefix-icon="vid-icon--info"
+                  ></el-input> </el-form-item
+              ></el-col>
+            </el-row>
             <el-row :gutter="30" type="flex" class="flex-wrap">
               <el-col :md="14"
                 ><el-form-item
@@ -176,7 +192,9 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :lg="6">
+            </el-row>
+            <el-row type="flex" class="flex-wrap">
+              <el-col :md="8">
                 <el-form-item label="Is this a paid event?">
                   <el-switch
                     v-model="event.paid"
@@ -185,10 +203,19 @@
                   ></el-switch>
                 </el-form-item>
               </el-col>
-              <el-col :lg="6">
+              <el-col :md="8">
                 <el-form-item label="Allow only RSVPs">
                   <el-switch
                     v-model="event.rsvp"
+                    :active-value="1"
+                    :inactive-value="0"
+                  ></el-switch>
+                </el-form-item>
+              </el-col>
+              <el-col v-if="event.rsvp === 1" :md="8">
+                <el-form-item label="Manually Approve RSVPs">
+                  <el-switch
+                    v-model="event.require_manual_approval"
                     :active-value="1"
                     :inactive-value="0"
                   ></el-switch>
@@ -233,6 +260,7 @@ export default {
       event: {
         event_date: '',
         event_name: '',
+        event_details: '',
         event_start_time: '',
         event_duration: '',
         paid: '',
@@ -240,7 +268,8 @@ export default {
         event_ref: '',
         event_video_url: '',
         event_banner: '',
-        event_hashtag: ''
+        event_hashtag: '',
+        require_manual_approval: ''
       },
       hashtags: [],
       responseEvent: {},
@@ -296,7 +325,9 @@ export default {
         this.responseEvent[convertedKey] = responseEvent[key]
       }
       this.event = { ...this.responseEvent }
-      this.generateHashtag(this.event.event_name)
+      if (!this.event.event_social_hashtag) {
+        this.generateHashtag(this.event.event_name)
+      }
       this.setBackgroundType()
     },
     async updateEvent() {

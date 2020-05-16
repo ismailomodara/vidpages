@@ -96,7 +96,9 @@ export default {
   },
   methods: {
     setValues() {
-      //
+      this.newQuestion.question = this.question.question
+      this.newQuestion.required = this.question.required
+      this.newQuestion.question_ref = this.question.questionRef
     },
     async addQuestion() {
       this.addingQuestion = true

@@ -187,13 +187,29 @@
   }
 }
 
+
+.el-table {
+  padding: 15px;
+  border-radius: 15px;
+}
+
 .vid-user-home .el-dialog {
   background: #f9f9fb;
+}
+
+.vid-cta .el-form-item__label {
+  color: #fff !important;
 }
 
 @media (max-width: 1440px) {
   .bg-image-dialog .el-dialog {
     width: 70% !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .el-dialog {
+    width: 60% !important;
   }
 }
 

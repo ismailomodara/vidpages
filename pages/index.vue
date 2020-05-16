@@ -2,10 +2,14 @@
   <div>
     <navbar />
     <div class="vid-home">
-      <div class="vid-header">
+      <div v-if="videoProviders.length" class="vid-header">
         <div class="container">
           <el-row type="flex" :gutter="40" align="middle">
             <el-col :md="12" class="vid-header-title">
+              <div class="home-snackbar">
+                <span class="icon">INFO</span>
+                Whatever comes is meant to go here
+              </div>
               <h2>Create video based events in minutes</h2>
               <div>
                 <el-dropdown>
@@ -248,6 +252,29 @@ export default {
 
       .vid-header-title {
         color: #fff;
+
+        .home-snackbar {
+          height: auto;
+          padding: 15px;
+          background: rgba(0, 0, 0, 0.4);
+          border-radius: 8px;
+          color: #fff;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          margin-bottom: 15px;
+          width: 85%;
+
+          .icon {
+            height: 100%;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            background: #7733f4;
+            color: #fff;
+            margin-right: 10px;
+          }
+        }
 
         h2 {
           font-size: 3rem;

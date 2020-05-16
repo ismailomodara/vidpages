@@ -10,7 +10,11 @@
             Friend
           </span>
         </h1>
-        <el-button size="small" type="white" @click="createEvent"
+        <el-button
+          :disabled="!canCreateEvent"
+          size="small"
+          type="white"
+          @click="createEvent"
           >Create Event</el-button
         >
       </div>
@@ -33,16 +37,16 @@
                     background:
                       setBackgroundType(event.eventBanner) === 'color'
                         ? `${event.eventBanner}`
+                        : false,
+                    backgroundImage:
+                      setBackgroundType(event.eventBanner) === 'image'
+                        ? `url(${event.eventBanner})`
                         : false
                   }"
                 >
-                  <img
-                    v-if="setBackgroundType(event.eventBanner) === 'image'"
-                    src
-                    alt
-                  />
                   <video
                     v-if="setBackgroundType(event.eventBanner) === 'video'"
+                    :src="event.eventBanner"
                     :autoplay="true"
                     :controls="false"
                   ></video>
@@ -133,7 +137,8 @@ export default {
       backgroundType: '',
       events: [],
       user_id: '',
-      userDetails: ''
+      userDetails: '',
+      canCreateEvent: false
     }
   },
   computed: {},
@@ -154,7 +159,10 @@ export default {
 
       if (videoFormat.includes(urlSplit[urlSplit - 1])) {
         type = 'video'
-      } else if (imageFormat.includes(urlSplit[urlSplit - 1])) {
+      } else if (
+        imageFormat.includes(urlSplit[urlSplit - 1]) ||
+        url.includes('unsplash')
+      ) {
         type = 'image'
       } else if (url.charAt(0) === '#') {
         type = 'color'
@@ -178,15 +186,19 @@ export default {
           .listEventsByUser(userId)
           .then((response) => {
             if (response.data.success) {
-              this.events = response.data.events
+              const data = response.data
+              this.events = data.events
               this.fetchingDetails = false
               this.showLoaderDialog = false
               if (!Cookies.get('user_id')) {
                 Cookies.set('user_id', userId)
-                Cookies.set('user', response.data.userInfo)
+                Cookies.set('user', data.userInfo)
               }
               this.user_id = userId
-              this.userDetails = response.data.userInfo
+              this.userDetails = data.userInfo
+              this.canCreateEvent =
+                (data.userInfo.isPaid === 0 && data.events.length < 20) ||
+                data.userInfo.isPaid
             }
           })
           .catch(() => {
@@ -262,6 +274,11 @@ export default {
       height: 250px;
       width: 100%;
       background: #222151;
+      position: relative;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: flex;
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;
 

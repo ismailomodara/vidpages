@@ -44,8 +44,9 @@
     <div class="vid-event-details">
       <div class="container">
         <el-form
-          ref="create"
+          ref="createEvent"
           :model="event"
+          :rules="rules"
           label-position="top"
           class="vid-event-form"
         >
@@ -132,7 +133,7 @@
                   v-custom-input="event.video_url"
                   class="vid-custom-input"
                   label="URL"
-                  prop="video_provider_meeting_id"
+                  prop="video_url"
                 >
                   <el-input
                     v-model="event.video_url"
@@ -196,13 +197,29 @@
                   ></el-input> </el-form-item
               ></el-col>
             </el-row>
+            <el-row type="flex" class="flex-wrap">
+              <el-col :lg="24"
+                ><el-form-item
+                  v-custom-input="event.event_details"
+                  class="vid-custom-input"
+                  label="Event Description"
+                  prop="event_details"
+                >
+                  <el-input
+                    v-model="event.event_details"
+                    type="text"
+                    auto-complete="off"
+                    prefix-icon="vid-icon--info"
+                  ></el-input> </el-form-item
+              ></el-col>
+            </el-row>
             <el-row :gutter="30" type="flex" class="flex-wrap">
               <el-col :lg="14"
                 ><el-form-item
                   v-custom-input="event.event_date"
                   class="vid-custom-input"
                   label="Date"
-                  prop="event_start_date"
+                  prop="event_date"
                 >
                   <el-date-picker
                     v-model="event.event_date"
@@ -218,7 +235,7 @@
                   v-custom-input="event.start_time"
                   class="vid-custom-input"
                   label="Time"
-                  prop="event_start_time"
+                  prop="start_time"
                 >
                   <el-time-select
                     v-model="event.start_time"
@@ -300,7 +317,7 @@
                   ></el-switch>
                 </el-form-item>
               </el-col>
-              <el-col :lg="8" v-if="event.rsvp === 1">
+              <el-col v-if="event.rsvp === 1" :lg="8">
                 <el-form-item label="Manually Approve RSVPs">
                   <el-switch
                     v-model="event.manual_approve"
@@ -348,6 +365,17 @@ export default {
     UpdateCoverImage
   },
   data() {
+    const urlReg = /^((ftp|http|https):\/\/)?(www\.)?([A-z]+)\.([A-z]{2,})/
+    const validateUrl = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Enter meeting url'))
+      }
+      setTimeout(() => {
+        if (!urlReg.test(value)) {
+          callback(new Error('Invalid url'))
+        }
+      }, 1000)
+    }
     return {
       choosePlan: false,
       ip: '',
@@ -367,6 +395,7 @@ export default {
         event_banner: '',
         event_name: '',
         video_url: '',
+        event_details: '',
         event_date: '',
         start_time: '',
         event_ref: '',
@@ -385,6 +414,46 @@ export default {
         zoom_meeting_id: '',
         zoom_meeting_password: '',
         user_email: ''
+      },
+      rules: {
+        video_url: [
+          { required: true, validator: validateUrl, trigger: 'blur' }
+        ],
+        zoom_meeting_id: [
+          {
+            required: true,
+            message: 'Enter meeting id',
+            trigger: 'change'
+          }
+        ],
+        zoom_meeting_password: [
+          {
+            required: true,
+            message: 'Enter meeting password',
+            trigger: 'change'
+          }
+        ],
+        event_details: [
+          {
+            required: true,
+            message: 'Enter event description',
+            trigger: 'change'
+          }
+        ],
+        event_date: [
+          {
+            required: true,
+            message: 'Enter event date',
+            trigger: 'change'
+          }
+        ],
+        start_time: [
+          {
+            required: true,
+            message: 'Enter event start time',
+            trigger: 'change'
+          }
+        ]
       },
       hasStartTime: true,
       creatingEvent: false,
@@ -426,8 +495,6 @@ export default {
         this.selectedVideoProvider = {
           provider: data.provider
         }
-      } else {
-        console.log(JSON.parse(Cookies.get('user')))
       }
     },
     async fetchAllPlans() {
@@ -463,28 +530,34 @@ export default {
     setVideoProvider(value) {
       this.selectedVideoProvider = this.videoProviders[value]
     },
-    async createEvent() {
-      this.creatingEvent = true
-      this.event.event_banner = this.backgroundUrl
-      this.event.event_date = this.event.event_date.toString()
-      await request
-        .createEvent(this.event)
-        .then((response) => {
-          if (response.data.success) {
-            this.$message.success('Event created')
-            this.creatingEvent = false
-            this.$router.push({
-              name: 'manage-ref',
-              params: { ref: response.event_ref }
+    createEvent() {
+      this.$refs.createEvent.validate((valid) => {
+        if (valid) {
+          this.event.event_banner = this.backgroundUrl
+          this.event.event_date = this.event.event_date.toString()
+          this.creatingEvent = true
+          request
+            .createEvent(this.event)
+            .then((response) => {
+              if (response.data.success) {
+                this.$message.success('Event created')
+                this.creatingEvent = false
+                this.$router.push({
+                  name: 'manage-ref',
+                  params: { ref: response.event_ref }
+                })
+              } else {
+                this.creatingEvent = false
+              }
             })
-          } else {
-            this.creatingEvent = false
-          }
-        })
-        .catch(() => {
-          this.creatingEvent = false
-          this.$message.error('Something went wrong')
-        })
+            .catch(() => {
+              this.creatingEvent = false
+              this.$message.error('Something went wrong')
+            })
+        } else {
+          return false
+        }
+      })
     }
   }
 }

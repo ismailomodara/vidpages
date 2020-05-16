@@ -18,10 +18,25 @@
           <el-table :data="allQuestions" style="width: 100%">
             <el-table-column prop="question" label="Question">
             </el-table-column>
-            <el-table-column prop="required" label="Status" width="180">
+            <el-table-column prop="required" label="Required" width="180">
+              <template slot-scope="scope">
+                <el-switch
+                  v-model="scope.row.required"
+                  :active-value="1"
+                  :inactive-value="0"
+                  disabled
+                ></el-switch>
+              </template>
             </el-table-column>
             <el-table-column>
-              <el-button type="outline" size="small">Update</el-button>
+              <template slot-scope="scope">
+                <el-button
+                  type="outline"
+                  size="small"
+                  @click="updateQuestion(scope.row)"
+                  >Update</el-button
+                >
+              </template>
             </el-table-column>
           </el-table>
         </el-col>
@@ -52,20 +67,20 @@ export default {
   },
   data() {
     return {
-      allQuestions: this.$store.state.event.question || [],
+      allQuestions: [],
       showQuestionAction: false,
       questionAction: 'add',
       questionToUpdate: {}
     }
   },
   computed: {
-    question() {
-      return this.$store.state.event.question
+    questions() {
+      return this.$store.state.event.questions
     }
   },
   watch: {
-    question() {
-      this.allQuestions = this.question
+    questions() {
+      this.allQuestions = this.questions
     }
   },
 
@@ -84,20 +99,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.el-timeline {
-  width: 100%;
-
-  .el-timeline-item {
-    width: calc(50% - 40px);
-    margin-bottom: 30px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .el-timeline {
-    display: flex;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

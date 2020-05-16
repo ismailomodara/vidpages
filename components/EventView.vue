@@ -19,7 +19,7 @@
         class="background-overlay"
       ></div>
       <div class="container">
-        <div class="vid-event-title">
+        <div v-if="event.eventName" class="vid-event-title">
           <div>
             <p class="event-status">{{ event.eventStatus }}</p>
             <h1>{{ event.eventName }}</h1>
@@ -72,27 +72,115 @@
               </el-dropdown>
             </div>
           </div>
-          <div class="vid-event-calendar">
+          <div
+            v-if="event.hasOwnProperty('eventDate')"
+            class="vid-event-calendar"
+          >
             <h3>{{ months[new Date(event.eventDate).getMonth()] }}</h3>
             <h1>{{ new Date(event.eventDate).getDate() }}</h1>
           </div>
         </div>
       </div>
     </div>
-    <section class="vid-countdown">
+    <section
+      v-if="event.paid || event.rsvp"
+      ref="eventDetails"
+      class="vid-event-details"
+    >
+      <div class="container">
+        <p class="mb-5">Event Details</p>
+        <el-row type="flex" :gutter="30" class="flex-wrap">
+          <el-col :sm="24" :md="8">
+            <div class="vid-event-detail">
+              <span class="title">Meeting URL</span>
+              <span class="value"
+                >{{ isUserRegistered ? event.eventVideoUrl : 'XXXXXXXXXXX' }}
+                <span v-if="event.eventVideoUrl && isUserRegistered">
+                  <el-input
+                    v-model="event.eventVideoUrl"
+                    class="vid-event-url"
+                    type="text"
+                  ></el-input>
+                  <a class="ml-2" @click="copyUrl"
+                    ><i class="vid-icon--copy"></i
+                  ></a>
+                  <a :href="event.eventVideoUrl" class="ml-2" target="_blank"
+                    ><i class="vid-icon--external-link"></i
+                  ></a>
+                </span>
+              </span>
+            </div>
+          </el-col>
+          <el-col :sm="24" :md="8">
+            <div class="vid-event-detail">
+              <span class="title">Meeting ID</span>
+              <span class="value"
+                >{{ isUserRegistered ? event.eventZoomMeetingId : 'XXXXXXXXXXX'
+                }}<span v-if="event.eventZoomMeetingId && isUserRegistered">
+                  <el-input
+                    v-model="event.eventZoomMeetingId"
+                    class="vid-event-id"
+                    type="text"
+                  ></el-input>
+                  <a class="ml-2" @click="copyUrlId"
+                    ><i class="vid-icon--copy"></i
+                  ></a> </span
+              ></span>
+            </div>
+          </el-col>
+          <el-col :sm="24" :md="8"
+            ><div class="vid-event-detail">
+              <span class="title">Meeting Password</span>
+              <span class="value"
+                >{{
+                  isUserRegistered
+                    ? event.eventZoomMeetingPassword
+                    : 'XXXXXXXXXXX'
+                }}<span
+                  v-if="event.eventZoomMeetingPassword && isUserRegistered"
+                >
+                  <el-input
+                    v-model="event.eventZoomMeetingPassword"
+                    class="vid-event-password"
+                    type="text"
+                  ></el-input>
+                  <a class="ml-2" @click="copyUrlPassword"
+                    ><i class="vid-icon--copy"></i
+                  ></a> </span
+              ></span></div
+          ></el-col>
+        </el-row>
+      </div>
+    </section>
+    <section v-if="event.eventDate" class="vid-countdown">
       <div class="container">
         <p>Time left to event</p>
-        <h2>{{ timeLeft }}</h2>
-        <el-dropdown>
-          <el-button type="outline">Add To Calendar</el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="(calendar, index) in calendars"
-              :key="index"
-              ><a :href="calendar.url" target="_blank">{{ calendar.name }}</a>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <div class="my-4">
+          <h6 v-if="new Date().getTime() > new Date(event.eventDate).getTime()">
+            Event has ended
+          </h6>
+          <div v-else class="d-flex flex-column">
+            <countdown :time="new Date(event.eventDate).getTime()">
+              <template slot-scope="props"
+                >{{ props.days }} days, {{ props.hours }} hours,
+                {{ props.minutes }} minutes,
+                {{ props.seconds }} seconds.</template
+              >
+            </countdown>
+            <el-dropdown class="mt-3">
+              <el-button type="outline">Add To Calendar</el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(calendar, index) in calendars"
+                  :key="index"
+                  ><a :href="calendar.url" target="_blank">{{
+                    calendar.name
+                  }}</a>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+        </div>
       </div>
     </section>
     <section v-if="speakers.length" class="vid-speakers">
@@ -202,14 +290,31 @@
       <div class="container">
         <p>Register for this event now!</p>
         <el-form
-          ref="attendForm"
+          ref="registerForm"
           :model="attend"
           :rules="rules"
           label-position="top"
         >
-          <el-form-item label="" prop="attendee_email">
-            <el-input v-model="attend.attendee_email"></el-input>
-          </el-form-item>
+          <el-row type="flex" class="flex-wrap">
+            <el-col :md="24"
+              ><el-form-item label="" prop="attendee_email">
+                <el-input
+                  v-model="attend.attendee_email"
+                ></el-input> </el-form-item
+            ></el-col>
+          </el-row>
+          <el-row type="flex" class="flex-wrap" :gutter="30">
+            <el-col
+              v-for="(question, index) in attend.questions"
+              :key="index"
+              :sm="24"
+              :md="12"
+            >
+              <el-form-item :label="question.question">
+                <el-input v-model="question.answer" type="text" />
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
         <el-button
           :loading="attending"
@@ -220,25 +325,30 @@
         >
       </div>
     </section>
-    <el-dialog :visible.sync="showPaymentDialog">
+    <el-dialog width="40%" :visible.sync="showPaymentDialog">
       <div v-loading="paying" class="payment-form">
         <el-form ref="payToAttendForm" :model="attend" :rules="rules">
-          <h5 class="mb-3">Provide your email address</h5>
-          <el-row :gutter="30" type="flex" class="flex-wrap">
-            <el-col :lg="24"
-              ><el-form-item
-                v-custom-input="attend.attendee_email"
-                class="vid-custom-input"
-                label="Your email"
-                prop="attendee_email"
-              >
+          <h5 class="mb-3">Please provide the required details</h5>
+          <el-row type="flex" class="flex-wrap">
+            <el-col :span="24"
+              ><el-form-item label="Your email" prop="attendee_email">
                 <el-input
                   v-model="attend.attendee_email"
                   type="text"
                   auto-complete="on"
-                  prefix-icon="vid-icon--at-sign"
                 ></el-input> </el-form-item
             ></el-col>
+          </el-row>
+          <el-row type="flex" class="flex-wrap" :gutter="30">
+            <el-col
+              v-for="(question, index) in attend.questions"
+              :key="index"
+              :span="24"
+            >
+              <el-form-item :label="question.question">
+                <el-input v-model="question.answer" type="text" />
+              </el-form-item>
+            </el-col>
           </el-row>
           <div class="d-flex justify-content-center">
             <el-button type="primary" @click="payAndAttend">Pay</el-button>
@@ -250,10 +360,12 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import request from '../controller/request'
 
 export default {
   name: 'EventView',
+  components: {},
   props: {
     show: Boolean
   },
@@ -285,7 +397,8 @@ export default {
       plans: [],
       attend: {
         attendee_email: '',
-        event_ref: ''
+        event_ref: '',
+        questions: []
       },
       rules: {
         attendee_email: [
@@ -312,7 +425,8 @@ export default {
         facebook: '',
         linkdeln: ''
       },
-      clientIdCalender: 'afXHuZxmQzqnsQSJXmZx86885'
+      clientIdCalender: 'afXHuZxmQzqnsQSJXmZx86885',
+      isUserRegistered: false
     }
   },
   computed: {
@@ -351,29 +465,22 @@ export default {
   },
   created() {
     if (this.$route.params.eventRef) {
+      if (this.$route.query.status && Cookies.get('attend')) {
+        this.registerAfterPay(JSON.parse(Cookies.get('attend')))
+      }
       this.getEvent()
     } else {
       this.$router.push({ name: 'index' })
     }
   },
+  mounted() {
+    if (Cookies.get('is-registered')) {
+      this.isUserRegistered = true
+    }
+  },
   methods: {
     scrollTo(ref) {
       this.$refs[ref].scrollIntoView()
-    },
-    countdown() {
-      const timeLeft = new Date(this.event.eventDate).getTime() - this.now
-
-      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24))
-      const hours = Math.floor(
-        (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      )
-      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
-
-      if (timeLeft < 0) {
-        return '00 : 00 : 00 : 00'
-      }
-      this.timeLeft = `${days} : ${hours} : ${minutes} : ${seconds}`
     },
     setBackgroundType() {
       const videoFormat = ['mp4', 'mov', '3gp']
@@ -403,6 +510,7 @@ export default {
           this.gallery = response.data.images
           this.attendees = response.data.attendees
           this.plans = response.data.plans
+          this.attend.questions = response.data.questions
           this.attend.event_ref = response.data.event.eventRef
           this.setBackgroundType()
           this.shareEvent()
@@ -429,15 +537,30 @@ export default {
       })
     },
     attendEvent() {
-      this.$refs.attendForm.validate((valid) => {
+      this.$refs.registerForm.validate((valid) => {
         if (valid) {
+          const questions = []
+          this.attend.questions.forEach((question) => {
+            questions.push({
+              answer: question.answer,
+              question_ref: question.questionRef
+            })
+          })
+          this.attend.questions = questions
           this.attending = true
-          request.attendEvent(this.attend).then((response) => {
+          request.registerForEvent(this.attend).then((response) => {
             if (response.data.success) {
-              this.$message.success(
-                'Your request to attend this event has been submitted'
-              )
-              this.attend.attendee_email = ''
+              this.$notify({
+                title: 'Request Submitted',
+                message:
+                  'Your request to attend this event has been submitted. You can check for event details now.',
+                type: 'success'
+              })
+              this.$refs.registerForm.resetFields()
+              this.attend.questions = []
+              this.isUserRegistered = true
+              Cookies.set('is-registered', true)
+              this.$refs.eventDetails.scrollIntoView()
               this.attending = false
             } else {
               this.attending = false
@@ -445,6 +568,14 @@ export default {
           })
         } else {
           return false
+        }
+      })
+    },
+    registerAfterPay(payload) {
+      request.registerForEvent(payload).then((response) => {
+        if (response.data.success) {
+          this.isUserRegistered = true
+          Cookies.set('is-registered', true)
         }
       })
     },
@@ -456,14 +587,18 @@ export default {
       this.$refs.payToAttendForm.validate((valid) => {
         if (valid) {
           this.paying = true
+          const questions = []
+          this.attend.questions.forEach((question) => {
+            questions.push({
+              answer: question.answer,
+              question_ref: question.questionRef
+            })
+          })
+          this.attend.questions = questions
           request.payForEvent(this.attend).then((response) => {
             if (response.data.success) {
-              this.$message.success(
-                'Your payment to attend this event has been received'
-              )
-              this.attend.attendee_email = ''
-              this.attend.plan_ref = ''
-              this.paying = false
+              Cookies.set('attend', this.attend)
+              window.location.href = response.data.ref
             } else {
               this.paying = false
             }
@@ -472,6 +607,99 @@ export default {
           return false
         }
       })
+    },
+    copyUrl() {
+      const link = document.querySelector('.vid-event-url .el-input__inner')
+      /* Select the text field */
+      link.select()
+      link.setSelectionRange(0, 99999)
+
+      document.execCommand('copy')
+
+      this.$message({
+        message: 'Meeting Url copied',
+        type: 'success'
+      })
+    },
+    copyUrlId() {
+      const link = document.querySelector('.vid-event-id .el-input__inner')
+      /* Select the text field */
+      link.select()
+      link.setSelectionRange(0, 99999)
+
+      document.execCommand('copy')
+
+      this.$message({
+        message: 'Meeting Id copied',
+        type: 'success'
+      })
+    },
+    copyUrlPassword() {
+      const link = document.querySelector(
+        '.vid-event-password .el-input__inner'
+      )
+      /* Select the text field */
+      link.select()
+      link.setSelectionRange(0, 99999)
+
+      document.execCommand('copy')
+
+      this.$message({
+        message: 'Meeting Password copied',
+        type: 'success'
+      })
+    }
+  },
+  head() {
+    return {
+      title: this.event.eventName,
+      meta: [
+        { itemprop: 'name', content: this.event.eventName },
+        { itemprop: 'description', content: 'Create video event online' },
+        {
+          itemprop: 'image',
+          content:
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? this.event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+
+        // Twitter Card data
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:site', content: '@vidrl' },
+        { name: 'twitter:title', content: 'Vidrl' },
+        { name: 'twitter:url', content: 'https://vidrl.netlify.app' },
+        {
+          name: 'twitter:image',
+          content:
+            'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+        { name: 'twitter:description', content: 'Text here' },
+        { name: 'twitter:app:country', content: 'NG' },
+        { name: 'twitter:creator', content: '@vidrl' },
+        { name: 'twitter:domain', content: '@vidrl' },
+        // Twitter summary card with large image must be at least 280x150px
+        {
+          name: 'twitter:image:src',
+          content:
+            'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+
+        // Open Graph data
+        { property: 'og:title', content: 'Vidrl' },
+        { property: 'og:url', content: 'https://vidrl.netlify.app' },
+        {
+          property: 'og:image',
+          content:
+            'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+        {
+          property: 'og:description',
+          content: 'Create video based event in minutes'
+        },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'Vidrl' }
+      ]
     }
   }
 }
@@ -591,6 +819,52 @@ export default {
             color: #222151;
           }
         }
+      }
+    }
+  }
+
+  .vid-event-details {
+    background: #f4f7fa;
+
+    p {
+      font-size: 1.4rem;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .vid-event-detail {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .vid-event-url,
+      .vid-event-id,
+      .vid-event-password {
+        opacity: 0;
+        z-index: -1;
+        position: absolute;
+
+        + a {
+          cursor: pointer;
+        }
+      }
+
+      .title {
+        background: #222151;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        margin-right: 12px;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
+
+      .value {
+        font-size: 1.1rem;
+        font-weight: 600;
       }
     }
   }

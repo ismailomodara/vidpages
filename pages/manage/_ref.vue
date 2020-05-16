@@ -29,17 +29,24 @@
         @select="setActiveIndex"
       >
         <el-menu-item index="update">Edit</el-menu-item>
+        <el-menu-item index="attendees">Attendees</el-menu-item>
         <el-menu-item index="speakers">Speakers</el-menu-item>
         <el-menu-item index="sponsors">Sponsors</el-menu-item>
         <el-menu-item index="schedule">Schedule</el-menu-item>
         <el-menu-item index="questions">Questions</el-menu-item>
         <el-menu-item index="gallery">Gallery</el-menu-item>
-        <el-menu-item index="payment">Payment</el-menu-item>
+        <el-menu-item :disabled="!canIntegrate" @click="goToIntegration"
+          >Integrations</el-menu-item
+        >
+        <el-menu-item :disabled="!showPayment" index="payment"
+          >Payment</el-menu-item
+        >
       </el-menu>
     </div>
     <div class="vid-manage-body">
       <div class="container">
         <UpdateEvent v-show="activeIndex === 'update'" />
+        <Attendees v-show="activeIndex === 'attendees'" />
         <Speakers v-show="activeIndex === 'speakers'" />
         <Sponsors v-show="activeIndex === 'sponsors'" />
         <Schedules v-show="activeIndex === 'schedule'" />
@@ -61,6 +68,7 @@
 <script>
 import Navbar from '~/components/Navbar'
 import UpdateEvent from '~/components/Manage/UpdateEvent'
+import Attendees from '~/components/Manage/Attendees'
 import Speakers from '~/components/Manage/Speakers'
 import Sponsors from '~/components/Manage/Sponsors'
 import Schedules from '~/components/Manage/Schedules'
@@ -73,6 +81,7 @@ export default {
   components: {
     Navbar,
     UpdateEvent,
+    Attendees,
     Speakers,
     Sponsors,
     Schedules,
@@ -87,7 +96,9 @@ export default {
       loading: false,
       eventName: '',
       eventPublicUrl: '',
-      eventRef: ''
+      eventRef: '',
+      showPayment: false,
+      canIntegrate: false
     }
   },
   computed: {
@@ -112,12 +123,22 @@ export default {
           this.eventName = response.event.eventName
           this.eventPublicUrl = response.event.eventPublicUrl
           this.eventRef = response.event.eventRef
+          this.showPayment =
+            (response.userInfo.allocations === 'unlimited' &&
+              response.userInfo.isPaid === 1) ||
+            (response.userInfo.isPaid === 0 &&
+              response.userInfo.allocations < 2)
+          this.canIntegrate = response.userInfo.allocations === 'unlimited'
           this.showLoaderDialog = false
         })
         .catch(() => {
           this.$router.push({ name: 'index' })
           this.showLoaderDialog = false
         })
+    },
+    goToIntegration() {
+      window.location.href =
+        'https://www.notion.so/Integrations-351752c9f1a84f23bfecdf640407fa70'
     },
     copyUrl() {
       const link = document.querySelector('.vid-event-summary .el-input__inner')

@@ -42,15 +42,9 @@ export default {
       blog:
         'https://www.notion.so/e52893dae7ec4ac98ac44c29d90d9e1d?v=7d66dde2d8d841d28fb5189682c81357',
       help_center:
-        'https://www.notion.so/Vidrl-Help-Center-633a79c099d9471ba44947fd0ff59c5f'
-    }
-  },
-  computed: {
-    user_id() {
-      return Cookies.get('user_id')
-    },
-    user() {
-      return Cookies.get('user')
+        'https://www.notion.so/Vidrl-Help-Center-633a79c099d9471ba44947fd0ff59c5f',
+      user_id: Cookies.get('user_id'),
+      user: Cookies.get('user')
     }
   },
   methods: {

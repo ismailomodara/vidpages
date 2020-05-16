@@ -24,7 +24,7 @@ export default {
 
       // Twitter Card data
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:site', content: '@vidrl' },
+      { name: 'twitter:site', content: '@hellovidrl' },
       { name: 'twitter:title', content: 'Vidrl' },
       { name: 'twitter:url', content: 'https://vidrl.netlify.app' },
       {
@@ -63,7 +63,7 @@ export default {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }],
     script: [
       {
         src: 'https://js.hs-scripts.com/7636004.js',
@@ -91,7 +91,12 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/element-ui', '@/plugins/directives'],
+  plugins: [
+    '@/plugins/element-ui',
+    '@/plugins/directives',
+    { src: '~/plugins/countdown', ssr: false },
+    { src: '~/plugins/downloadCsv', ssr: false }
+  ],
   /*
    ** Nuxt.js dev-modules
    */

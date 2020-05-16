@@ -73,7 +73,7 @@ export default {
     return $axios.post('/share', { event_ref: eventRef })
   },
 
-  attendEvent(payload) {
+  registerForEvent(payload) {
     return $axios.post('/event-registration', payload)
   },
 
@@ -96,5 +96,9 @@ export default {
 
   updateQuestion(payload) {
     return $axios.post('/create-event-questions', payload)
+  },
+
+  approveAttendee(payload) {
+    return $axios.post('/approve-attendee', payload)
   }
 }
