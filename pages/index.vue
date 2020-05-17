@@ -7,8 +7,10 @@
           <el-row type="flex" :gutter="40" align="middle">
             <el-col :md="12" class="vid-header-title">
               <div class="home-snackbar">
+                <a :href="notification.link" target="_blank"></a>
                 <span class="icon">INFO</span>
-                Whatever comes is meant to go here
+                {{ notification.notification }}...
+                <span class="learn-more">Learn more</span>
               </div>
               <h2>Create video based events in minutes</h2>
               <div>
@@ -186,6 +188,7 @@ export default {
       loadingPage: true,
       plans: [],
       videoProviders: [],
+      notification: {},
       date: new Date().getFullYear()
     }
   },
@@ -200,6 +203,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.videoProviders = response.data.providers
+            this.notification = response.data.notification
             this.fetchAllPlans()
           }
         })
@@ -264,11 +268,26 @@ export default {
           align-items: center;
           margin-bottom: 15px;
           width: 85%;
+          position: relative;
+          font-size: 0.9rem;
+
+          .learn-more {
+            text-decoration: underline;
+          }
+
+          a {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            color: #fff;
+          }
 
           .icon {
             height: 100%;
             padding: 5px 10px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             border-radius: 5px;
             background: #7733f4;
             color: #fff;
