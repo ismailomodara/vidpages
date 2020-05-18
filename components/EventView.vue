@@ -650,8 +650,9 @@ export default {
       })
     }
   },
-  head() {
+  metaInfo() {
     return {
+      // if no subcomponents specify a metaInfo.title, this title will be used
       title: this.event.eventName,
       meta: [
         { itemprop: 'name', content: this.event.eventName },
@@ -660,32 +661,42 @@ export default {
           itemprop: 'image',
           content:
             this.backgroundType === 'image' || this.backgroundType === 'video'
-              ? this.event.eventBanner
+              ? event.eventBanner
               : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
         },
 
         // Twitter Card data
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@hellovidrl' },
-        { name: 'twitter:title', content: 'Test' },
         {
-          name: 'twitter:url',
-          content: 'https://vidrl.netlify.app/event/test'
+          hid: 'twitter:title',
+          name: 'twitter:title',
+          content: this.event.eventName
         },
         {
+          hid: 'twitter:url',
+          name: 'twitter:url',
+          content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
+        },
+        {
+          hid: 'twitter:image',
           name: 'twitter:image',
           content:
-            'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEzMDM2NX0'
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
         },
-        { name: 'twitter:description', content: 'Event details' },
-        { name: 'twitter:app:country', content: 'NG' },
-        { name: 'twitter:creator', content: '@hellovidrl' },
-        { name: 'twitter:domain', content: '@hellovidrl' },
+        {
+          hid: 'twitter:description',
+          name: 'twitter:description',
+          content: this.event.eventDetails
+        },
         // Twitter summary card with large image must be at least 280x150px
         {
+          hid: 'twitter:image:src',
           name: 'twitter:image:src',
           content:
-            'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEzMDM2NX0'
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? this.event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
         },
 
         // Open Graph data

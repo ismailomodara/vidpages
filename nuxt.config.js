@@ -25,19 +25,29 @@ export default {
       // Twitter Card data
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@hellovidrl' },
-      { name: 'twitter:title', content: 'Vidrl' },
-      { name: 'twitter:url', content: 'https://vidrl.netlify.app' },
+      { hid: 'twitter:title', name: 'twitter:title', content: 'Vidrl' },
       {
+        hid: 'twitter:url',
+        name: 'twitter:url',
+        content: 'https://vidrl.netlify.app'
+      },
+      {
+        hid: 'twitter:image',
         name: 'twitter:image',
         content:
           'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
       },
-      { name: 'twitter:description', content: 'Text here' },
+      {
+        hid: 'twitter:description',
+        name: 'twitter:description',
+        content: 'General twitter desc'
+      },
       { name: 'twitter:app:country', content: 'NG' },
-      { name: 'twitter:creator', content: '@vidrl' },
-      { name: 'twitter:domain', content: '@vidrl' },
+      { name: 'twitter:creator', content: '@hellovidrl' },
+      { name: 'twitter:domain', content: 'vidrl' },
       // Twitter summary card with large image must be at least 280x150px
       {
+        hid: 'twitter:image:src',
         name: 'twitter:image:src',
         content:
           'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
@@ -94,6 +104,7 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     '@/plugins/directives',
+    '@/plugins/vue-meta',
     { src: '~/plugins/countdown', ssr: false },
     { src: '~/plugins/downloadCsv', ssr: false }
   ],
