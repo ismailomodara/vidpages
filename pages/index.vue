@@ -9,7 +9,7 @@
               <div class="home-snackbar">
                 <a :href="notification.link" target="_blank"></a>
                 <span class="icon">INFO</span>
-                {{ notification.notification }}...
+                <span class="text">{{ notification.notification }}...</span>
                 <span class="learn-more">Learn more</span>
               </div>
               <h2>Create video based events in minutes</h2>
@@ -125,13 +125,16 @@
             >
               <div class="vid-plan" :class="{ inverse: index % 2 !== 0 }">
                 <h6>{{ plan.planName }}</h6>
-                <span>{{ plan.planPrice }}</span>
+                <span>{{ plan.currency }}{{ plan.planPrice || 0 }}</span>
                 <hr />
                 <ul>
                   <li v-for="(item, index) in plan.items" :key="index">
                     {{ item.planItem }}
                   </li>
                 </ul>
+                <div id="saasble_subscription">
+                  <el-button type="primary" size="small">Try out</el-button>
+                </div>
               </div>
             </el-col>
           </el-row>
@@ -158,7 +161,11 @@
             </div>
           </div>
           <hr />
-          <div>
+          <div class="footer">
+            <div class="footer-links">
+              <a :href="privacy_policy" target="_blank">Privacy policy</a>
+              <a :href="terms" target="_blank">Terms of Use</a>
+            </div>
             <p>copyright © {{ date }} - Vidrl. All rights reserved.</p>
           </div>
         </div>
@@ -189,7 +196,11 @@ export default {
       plans: [],
       videoProviders: [],
       notification: {},
-      date: new Date().getFullYear()
+      date: new Date().getFullYear(),
+      privacy_policy:
+        'https://www.notion.so/Privacy-Policy-a582331d4ffa4379af01ff06e32638f9',
+      terms:
+        'https://www.notion.so/Terms-of-Use-96207288ffbd46178dc9420ce43e0545'
     }
   },
   computed: {},
@@ -204,14 +215,21 @@ export default {
           if (response.data.success) {
             this.videoProviders = response.data.providers
             this.notification = response.data.notification
-            this.fetchAllPlans()
+            this.getIp()
           }
         })
         .catch()
     },
-    async fetchAllPlans() {
+    getIp() {
+      fetch('https://api.ipify.org?format=json')
+        .then((x) => x.json())
+        .then(({ ip }) => {
+          this.fetchAllPlans(ip)
+        })
+    },
+    async fetchAllPlans(ip) {
       await request
-        .getPlans()
+        .getPlans(ip)
         .then((response) => {
           if (response.data.success) {
             this.plans = response.data.plans
@@ -219,6 +237,22 @@ export default {
           }
         })
         .catch()
+    }
+  },
+  head() {
+    return {
+      script: [
+        {
+          src:
+            'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'
+        },
+        {
+          innerHTML: `!function(){if(window.sassblesubscription&&window.sassblesubscription.created)window.console&&console.error&&console.error("Saasble snippet included twice.")\n else{window.sassblesubscription={created:!0}\n var a=document.createElement("script")\n a.src="https://dashboard.saasble.com/dist/sub_mod.js"\n a.async=!0\n var b=document.getElementsByTagName("script")[0]\n b.parentNode.insertBefore(a,b),window.sassblesubscription.params = {secret: "738ea4f7-0dc0-41fa-b40e-fdf09f39c6c9", customer_oid: "<example_customer_123>" ,customer_email: "<example_customer_123>", provider_oid: "<example_customer_123>" ,plan_id: "<plan_123>" }}}()`,
+          type: 'text/javascript',
+          body: true,
+          defer: true
+        }
+      ]
     }
   }
 }
@@ -353,14 +387,15 @@ export default {
 
     .vid-plan {
       background: #fff;
-      min-height: 330px;
+      min-height: 550px;
       width: 100%;
       border-radius: 10px;
-      padding: 50px;
+      padding: 50px 30px;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
       margin-bottom: 30px;
       text-align: center;
       color: #222151;
+      position: relative;
 
       h6 {
         font-weight: 500;
@@ -387,7 +422,15 @@ export default {
         li {
           padding: 10px 0;
           text-align: left;
+          font-size: 0.9rem;
         }
+      }
+
+      > div:last-child {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 50px;
       }
     }
   }
@@ -415,6 +458,28 @@ export default {
         opacity: 0.5;
       }
     }
+
+    .footer {
+      flex-direction: row !important;
+      align-items: center;
+      justify-content: space-between !important;
+      width: 100%;
+      margin: auto;
+
+      p {
+        margin-bottom: 0;
+      }
+
+      .footer-links {
+        display: flex;
+
+        a {
+          color: #fff;
+          margin-right: 20px;
+          font-size: 0.9rem;
+        }
+      }
+    }
   }
 }
 
@@ -440,6 +505,12 @@ export default {
   section {
     padding: 40px 15px !important;
   }
+
+  .home-snackbar {
+    width: 100% !important;
+    flex-direction: column;
+  }
+
   .vid-header {
     .el-row {
       flex-direction: column-reverse;
@@ -478,6 +549,19 @@ export default {
 
     .el-button {
       margin-bottom: 10px;
+    }
+
+    .footer {
+      flex-direction: column !important;
+
+      .footer-links {
+        margin-bottom: 20px;
+      }
+
+      p {
+        line-height: 1.6;
+        width: 60%;
+      }
     }
   }
 }

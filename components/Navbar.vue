@@ -7,6 +7,7 @@
       <div class="nav-links">
         <a v-if="$route.name === 'index'" :href="blog" target="_blank">Blog</a>
         <a :href="help_center" target="_blank">Help Center</a>
+        <a :href="resources" target="_blank">Resources</a>
         <VidHeadwayWidget v-if="$route.name === 'manage-ref'" />
         <p v-if="user && user_id">
           <el-dropdown @command="command">
@@ -43,6 +44,8 @@ export default {
         'https://www.notion.so/e52893dae7ec4ac98ac44c29d90d9e1d?v=7d66dde2d8d841d28fb5189682c81357',
       help_center:
         'https://www.notion.so/Vidrl-Help-Center-633a79c099d9471ba44947fd0ff59c5f',
+      resources:
+        'https://www.notion.so/Resource-Center-ce37705578174333ae6fa6d543111b60',
       user_id: Cookies.get('user_id'),
       user: Cookies.get('user')
     }
@@ -123,6 +126,12 @@ export default {
     span {
       color: #fff !important;
     }
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-links a {
+    display: none !important;
   }
 }
 </style>
