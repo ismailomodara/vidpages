@@ -717,9 +717,7 @@ export default {
           hid: 'ogDescription',
           property: 'og:description',
           content: this.event.eventDetails
-        },
-        { property: 'og:type', content: 'website' },
-        { property: 'og:site_name', content: 'Vidrl' }
+        }
       ]
     }
   }
