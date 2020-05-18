@@ -666,17 +666,17 @@ export default {
 
         // Twitter Card data
         {
-          hid: 'twitter:title',
+          hid: 'twitterTitle',
           name: 'twitter:title',
           content: this.event.eventName
         },
         {
-          hid: 'twitter:url',
+          hid: 'twitterUrl',
           name: 'twitter:url',
           content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
         },
         {
-          hid: 'twitter:image',
+          hid: 'twitterImage',
           name: 'twitter:image',
           content:
             this.backgroundType === 'image' || this.backgroundType === 'video'
@@ -684,13 +684,13 @@ export default {
               : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
         },
         {
-          hid: 'twitter:description',
+          hid: 'twitterDescription',
           name: 'twitter:description',
           content: this.event.eventDetails
         },
         // Twitter summary card with large image must be at least 280x150px
         {
-          hid: 'twitter:image:src',
+          hid: 'twitterImageSrc',
           name: 'twitter:image:src',
           content:
             this.backgroundType === 'image' || this.backgroundType === 'video'
@@ -699,12 +699,14 @@ export default {
         },
 
         // Open Graph data
-        { property: 'og:title', content: this.event.eventName },
+        { hid: 'ogTitle', property: 'og:title', content: this.event.eventName },
         {
+          hid: 'ogUrl',
           property: 'og:url',
           content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
         },
         {
+          hid: 'ogImage',
           property: 'og:image',
           content:
             this.backgroundType === 'image' || this.backgroundType === 'video'
@@ -712,6 +714,7 @@ export default {
               : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
         },
         {
+          hid: 'ogDescription',
           property: 'og:description',
           content: this.event.eventDetails
         },

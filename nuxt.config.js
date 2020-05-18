@@ -25,15 +25,20 @@ export default {
       // Twitter Card data
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@hellovidrl' },
-      { name: 'twitter:title', content: 'Vidrl' },
-      { name: 'twitter:url', content: 'https://vidrl.netlify.app' },
+      { hid: 'twitterTitle', name: 'twitter:title', content: 'Vidrl' },
       {
+        hid: 'twitterUrl',
+        name: 'twitter:url',
+        content: 'https://vidrl.netlify.app'
+      },
+      {
+        hid: 'twitterImage',
         name: 'twitter:image',
         content:
           'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
       },
       {
-        hid: 'twitter:description',
+        hid: 'twitterDescription',
         name: 'twitter:description',
         content: 'General twitter desc'
       },
@@ -42,20 +47,27 @@ export default {
       { name: 'twitter:domain', content: '@vidrl' },
       // Twitter summary card with large image must be at least 280x150px
       {
+        hid: 'twitterImageSrc',
         name: 'twitter:image:src',
         content:
           'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
       },
 
       // Open Graph data
-      { property: 'og:title', content: 'Vidrl' },
-      { property: 'og:url', content: 'https://vidrl.netlify.app' },
+      { hid: 'ogTitle', property: 'og:title', content: 'Vidrl' },
       {
+        hid: 'ogUrl',
+        property: 'og:url',
+        content: 'https://vidrl.netlify.app'
+      },
+      {
+        hid: 'ogImage',
         property: 'og:image',
         content:
           'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
       },
       {
+        hid: 'ogDescription',
         property: 'og:description',
         content: 'Create video based event in minutes'
       },
