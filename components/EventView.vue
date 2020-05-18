@@ -650,9 +650,8 @@ export default {
       })
     }
   },
-  metaInfo() {
+  head() {
     return {
-      // if no subcomponents specify a metaInfo.title, this title will be used
       title: this.event.eventName,
       meta: [
         { itemprop: 'name', content: this.event.eventName },
