@@ -38,7 +38,7 @@
         <el-menu-item :disabled="!canIntegrate" @click="goToIntegration"
           >Integrations</el-menu-item
         >
-        <el-menu-item :disabled="showPayment" index="payment"
+        <el-menu-item :disabled="!showPayment" index="payment"
           >Payment</el-menu-item
         >
       </el-menu>
