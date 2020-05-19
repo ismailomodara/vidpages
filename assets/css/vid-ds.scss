@@ -163,6 +163,13 @@
   padding: 0;
 }
 
+.el-input__suffix {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 15px;
+}
+
 .el-link.el-link--default:hover {
   color: #222151;
   text-decoration: none;

@@ -86,10 +86,21 @@
               >
                 <el-input
                   v-model="payment.event_payment_provider_public"
-                  type="text"
+                  :type="publicKeyType"
                   auto-complete="off"
                   prefix-icon="vid-icon--lock"
-                ></el-input> </el-form-item
+                >
+                  <i
+                    slot="suffix"
+                    :class="
+                      publicKeyType === 'password'
+                        ? 'vid-icon--eye'
+                        : 'vid-icon--eye-off'
+                    "
+                    @click="showPublicKey"
+                  >
+                  </i>
+                </el-input> </el-form-item
             ></el-col>
           </el-row>
           <el-row type="flex" :gutter="40">
@@ -102,9 +113,19 @@
               >
                 <el-input
                   v-model="payment.event_payment_provider_secret"
-                  type="text"
+                  :type="secretKeyType"
                   auto-complete="off"
                   prefix-icon="vid-icon--lock"
+                  ><i
+                    slot="suffix"
+                    :class="
+                      secretKeyType === 'password'
+                        ? 'vid-icon--eye'
+                        : 'vid-icon--eye-off'
+                    "
+                    @click="showSecretKey"
+                  >
+                  </i
                 ></el-input> </el-form-item
             ></el-col>
           </el-row>
@@ -152,7 +173,9 @@ export default {
       responseEvent: {},
       showPaymentPlanAction: false,
       paymentPlanAction: 'add',
-      paymentPlanToUpdate: {}
+      paymentPlanToUpdate: {},
+      publicKeyType: 'password',
+      secretKeyType: 'password'
     }
   },
   computed: {
@@ -169,6 +192,14 @@ export default {
     this.fetchAllPaymentProviders()
   },
   methods: {
+    showPublicKey() {
+      this.publicKeyType =
+        this.publicKeyType === 'password' ? 'text' : 'password'
+    },
+    showSecretKey() {
+      this.secretKeyType =
+        this.secretKeyType === 'password' ? 'text' : 'password'
+    },
     async fetchAllPaymentProviders() {
       await request
         .getPaymentProviders()

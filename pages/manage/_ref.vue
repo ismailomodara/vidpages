@@ -38,7 +38,7 @@
         <el-menu-item :disabled="!canIntegrate" @click="goToIntegration"
           >Integrations</el-menu-item
         >
-        <el-menu-item :disabled="!showPayment" index="payment"
+        <el-menu-item :disabled="showPayment" index="payment"
           >Payment</el-menu-item
         >
       </el-menu>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import Navbar from '~/components/Navbar'
 import UpdateEvent from '~/components/Manage/UpdateEvent'
 import Attendees from '~/components/Manage/Attendees'
@@ -109,7 +110,7 @@ export default {
     }
   },
   created() {
-    if (this.$route.params.ref) {
+    if (this.$route.params.ref && Cookies.get('user_id')) {
       this.getEvent()
     } else {
       this.$router.push({ name: 'index' })

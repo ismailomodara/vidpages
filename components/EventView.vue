@@ -23,13 +23,17 @@
           <div>
             <p class="event-status">{{ event.eventStatus }}</p>
             <h1>{{ event.eventName }}</h1>
-            <el-button type="white" @click="scrollTo('register')"
+            <el-button
+              v-if="eventActive"
+              type="white"
+              @click="scrollTo('register')"
               >Register For This Event</el-button
             >
             <div class="d-flex align-items-center mt-2">
               <h5 v-if="attendees.length" class="mb-0">
                 {{ attendees.length }}
-                {{ attendees.length > 1 ? 'people' : 'person' }} attending
+                {{ attendees.length > 1 ? 'people' : 'person' }}
+                {{ eventActive ? 'attending' : 'attended' }}
               </h5>
               <div class="like-event">
                 <img
@@ -156,15 +160,30 @@
       <div class="container">
         <p>Time left to event</p>
         <div class="my-4">
-          <h6 v-if="new Date().getTime() > new Date(event.eventDate).getTime()">
+          <h6 v-if="new Date() > new Date(event.eventDate)">
             Event has ended
           </h6>
-          <div v-else class="d-flex flex-column">
-            <countdown :time="new Date(event.eventDate).getTime()">
+          <div v-else class="d-flex flex-column align-items-center">
+            <countdown :time="new Date(event.eventDate) - new Date()">
               <template slot-scope="props"
-                >{{ props.days }} days, {{ props.hours }} hours,
-                {{ props.minutes }} minutes,
-                {{ props.seconds }} seconds.</template
+                ><div class="vid-countdown-design">
+                  <div>
+                    <span>{{ props.days }}</span
+                    >days
+                  </div>
+                  <div>
+                    <span>{{ props.hours }}</span
+                    >hours
+                  </div>
+                  <div>
+                    <span>{{ props.minutes }}</span
+                    >minutes
+                  </div>
+                  <div>
+                    <span>{{ props.seconds }}</span
+                    >seconds
+                  </div>
+                </div></template
               >
             </countdown>
             <el-dropdown class="mt-3">
@@ -277,6 +296,7 @@
                 <el-button
                   size="small"
                   type="white"
+                  v-if="eventActive"
                   @click="setAttendeePlan(plan.eventPlanRef)"
                   >Pay To Attend</el-button
                 >
@@ -286,7 +306,7 @@
         </el-row>
       </div>
     </section>
-    <section v-if="!plans.length" ref="register" class="vid-cta">
+    <section v-if="!plans.length && eventActive" ref="register" class="vid-cta">
       <div class="container">
         <p>Register for this event now!</p>
         <el-form
@@ -461,6 +481,9 @@ export default {
           url: `https://www.addevent.com/dir/?client=${this.clientIdCalender}&start=${this.event.eventDate}&title=${this.event.eventName}&description=Description+of+the+event&location=${this.event.eventVideo}&service=yahoo`
         }
       ]
+    },
+    eventActive() {
+      return new Date(this.event.eventDate) > new Date()
     }
   },
   created() {
@@ -893,14 +916,53 @@ export default {
     background: #fff;
 
     p {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 500;
+    }
+
+    h6 {
+      font-size: 2rem;
+      font-weight: 600;
     }
 
     h2 {
       color: #222151;
       font-weight: 600;
       font-size: 3rem;
+    }
+
+    .vid-countdown-design {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: #222151;
+
+        &:not(:last-child) {
+          margin-right: 15px;
+        }
+
+        span {
+          background: #222151;
+          width: 80px;
+          height: 70px;
+          border-radius: 8px;
+          color: #fff;
+          font-size: 2.2rem;
+          font-weight: 600;
+          margin-bottom: 12px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
     }
   }
 
