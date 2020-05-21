@@ -17,6 +17,7 @@
     "bootstrap": "^4.4.1",
     "element-ui": "^2.4.11",
     "js-cookie": "^2.2.1",
+    "js-sha512": "^0.8.0",
     "moment": "^2.25.3",
     "nuxt": "^2.0.0",
     "remove": "^0.1.5",

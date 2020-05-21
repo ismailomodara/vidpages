@@ -100,5 +100,9 @@ export default {
 
   approveAttendee(payload) {
     return $axios.post('/approve-attendee', payload)
+  },
+
+  messageAttendees(payload) {
+    return $axios.post('/email-attendees', payload)
   }
 }

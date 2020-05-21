@@ -5,6 +5,26 @@
       <el-row type="flex" class="flex-wrap">
         <el-col :md="20" class="mx-auto">
           <div class="d-flex justify-content-end mb-3">
+            <div>
+              <el-tooltip
+                v-if="!isPaid"
+                effect="dark"
+                content="For paid users only"
+                placement="left-start"
+              >
+                <el-button size="small" type="outline" class="mr-2"
+                  >Message</el-button
+                >
+              </el-tooltip>
+              <el-button
+                v-else
+                size="small"
+                type="outline"
+                class="mr-2"
+                @click="showMessageDialog = true"
+                >Message</el-button
+              >
+            </div>
             <download-csv :data="formattedAttendeesList" :name="fileName">
               <el-button size="small" type="primary">Download</el-button>
             </download-csv>
@@ -61,6 +81,33 @@
     <div v-else>
       <EmptyState text="You currently have no attendees"></EmptyState>
     </div>
+    <el-dialog
+      title="Send attendees message"
+      :visible.sync="showMessageDialog"
+      width="33"
+    >
+      <el-form ref="messageForm" :model="message" class="message-form">
+        <el-row type="flex" justify="center">
+          <el-col :md="24">
+            <el-form-item label="Event">
+              <el-input v-model="eventName" disabled type="text" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="center">
+          <el-col :md="24">
+            <el-form-item prop="message" label="Your message">
+              <el-input v-model="message.message" type="textarea" rows="5" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <div class="d-flex justify-content-center my-3">
+          <el-button type="primary" :loading="sending" @click="sendMessage"
+            >Send message</el-button
+          >
+        </div>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -79,12 +126,22 @@ export default {
       allAttendees: [],
       attendee: {},
       accepting: false,
-      isRequireManualApproved: 0
+      isRequireManualApproved: 0,
+      showMessageDialog: false,
+      eventName: '',
+      message: {
+        event_ref: '',
+        message: ''
+      },
+      sending: false
     }
   },
   computed: {
     event() {
       return this.$store.state.event.event
+    },
+    isPaid() {
+      return this.$store.state.event.userInfo.isPaid
     },
     attendees() {
       return this.$store.state.event.attendees
@@ -116,11 +173,34 @@ export default {
   watch: {
     attendees() {
       this.allAttendees = this.attendees
+      this.eventName = this.event.eventName
+      this.message.event_ref = this.event.eventRef
       this.isRequireManualApproved = this.event.requireManualApproval
     }
   },
 
   methods: {
+    async sendMessage() {
+      this.sending = true
+      await request
+        .messageAttendees(this.message)
+        .then((response) => {
+          if (response.data.success) {
+            this.sending = false
+            this.$refs.messageForm.resetFields()
+            this.showMessageDialog = false
+            this.$message.success('Message sent')
+          } else {
+            this.$message.error('Message not sent')
+            this.sending = false
+          }
+        })
+        .catch(() => {
+          this.showMessageDialog = false
+          this.$refs.messageForm.resetFields()
+          this.sending = false
+        })
+    },
     async approveAttendee(attendeeEmail) {
       this.accepting = true
       this.attendee.event_ref = this.$store.state.event.event.eventRef
@@ -187,4 +267,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.message-form {
+  width: 80%;
+  margin: auto;
+}
+</style>

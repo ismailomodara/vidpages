@@ -154,6 +154,8 @@ import request from '../../controller/request'
 import { convertCase } from '../../plugins/case-converter'
 import PaymentAction from '../Payment/PaymentAction'
 
+const sha512 = require('js-sha512')
+
 export default {
   name: 'Payment',
   components: {
@@ -219,28 +221,29 @@ export default {
       this.payment = { ...this.responseEvent }
       this.paymentPlans = this.$store.state.event.plans
     },
-    async updateEvent() {
+    updateEvent() {
       this.loading = true
-      await request
-        .createEvent(this.payment)
-        .then((response) => {
-          if (response.data.success) {
-            this.$store
-              .dispatch('EVENT', this.$route.params.ref)
-              .then(() => {
-                this.$message.success('Payment details updated!')
-                this.loading = false
-              })
-              .catch(() => {
-                this.loading = false
-              })
-          } else {
-            this.loading = false
-          }
-        })
-        .catch(() => {
-          this.loading = false
-        })
+      console.log(sha512(this.payment.event_payment_provider_public))
+      // await request
+      //   .createEvent(this.payment)
+      //   .then((response) => {
+      //     if (response.data.success) {
+      //       this.$store
+      //         .dispatch('EVENT', this.$route.params.ref)
+      //         .then(() => {
+      //           this.$message.success('Payment details updated!')
+      //           this.loading = false
+      //         })
+      //         .catch(() => {
+      //           this.loading = false
+      //         })
+      //     } else {
+      //       this.loading = false
+      //     }
+      //   })
+      //   .catch(() => {
+      //     this.loading = false
+      //   })
     },
     addPlan() {
       this.paymentPlanAction = 'add'
