@@ -107,8 +107,12 @@
               class="mx-auto"
             >
               <div class="vid-plan" :class="{ inverse: index % 2 !== 0 }">
-                <h6>{{ plan.planPrice === '' ? 'Free' : plan.planName }}</h6>
-                <span>{{ plan.currency }}{{ plan.planPrice || 0 }}</span>
+                <h6>{{ plan.planName }}</h6>
+                <span>{{
+                  plan.planPrice === ''
+                    ? 'Free'
+                    : `${plan.currency}${plan.planPrice}`
+                }}</span>
                 <hr />
                 <ul>
                   <li v-for="(item, index) in plan.items" :key="index">
