@@ -345,9 +345,11 @@
       :background.sync="backgroundUrl"
     />
     <el-dialog
-      :visible="choosePlan"
-      :close-on-click-modal="false"
-      @close="choosePlan = false"
+      v-loading="loadingPage"
+      class="loading-dialog"
+      :visible="loadingPage"
+      :fullscreen="true"
+      :show-close="false"
     ></el-dialog>
   </div>
 </template>
@@ -377,9 +379,9 @@ export default {
       }, 1000)
     }
     return {
+      loadingPage: true,
       choosePlan: false,
       ip: '',
-      plans: '',
       videoProviders: [],
       selectedVideoProvider: '',
       updateCoverImage: false,
@@ -480,7 +482,6 @@ export default {
       this.isLoggedInVia = true
       this.setProvider()
     }
-    this.fetchAllPlans()
     this.fetchAllVideoProviders()
     this.generateRef()
   },
@@ -497,22 +498,13 @@ export default {
         }
       }
     },
-    async fetchAllPlans() {
-      await request
-        .getPlans(this.ip)
-        .then((response) => {
-          if (response.data.success) {
-            this.plans = response.data.plans
-          }
-        })
-        .catch()
-    },
     async fetchAllVideoProviders() {
       await request
         .getVideoProviders()
         .then((response) => {
           if (response.data.success) {
             this.videoProviders = response.data.providers
+            this.loadingPage = false
           }
         })
         .catch()

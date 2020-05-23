@@ -49,10 +49,9 @@
               <img src="@/assets/img/time-management.svg" alt />
             </el-col>
             <el-col :sm="24" :lg="12">
-              <h3>Time management</h3>
+              <h3>Fast and easy</h3>
               <p>
-                A detailed description of what feature one is about and what
-                makes the product unique from others.
+                Quickly create a website to promote your virtual event.
               </p>
             </el-col>
           </el-row>
@@ -62,10 +61,10 @@
         <div class="container">
           <el-row type="flex" :gutter="40" align="middle">
             <el-col :lg="12">
-              <h3>Create RSVP Events</h3>
+              <h3>Share</h3>
               <p>
-                A detailed description of what feature one is about and what
-                makes the product unique from others.
+                Share your link on social media without letting trolls in.
+                Configure your event to require RSVP and manual approval.
               </p>
             </el-col>
             <el-col :lg="12" class="d-flex justify-content-center">
@@ -81,27 +80,11 @@
               <img src="@/assets/img/interactive.svg" alt />
             </el-col>
             <el-col :lg="12">
-              <h3>Video Session</h3>
+              <h3>Make Money for Hosting Events.</h3>
               <p>
-                A detailed description of what feature one is about and what
-                makes the product unique from others.
+                Make money with tip donations or charge for event entry. Guests
+                receive access information after payment.
               </p>
-            </el-col>
-          </el-row>
-        </div>
-      </section>
-      <section class="vid-feature">
-        <div class="container">
-          <el-row type="flex" :gutter="40" align="middle">
-            <el-col :lg="12">
-              <h3>Events Gallery</h3>
-              <p>
-                A detailed description of what feature one is about and what
-                makes the product unique from others.
-              </p>
-            </el-col>
-            <el-col :lg="12" class="d-flex justify-content-center">
-              <img src="@/assets/img/gallery.svg" alt />
             </el-col>
           </el-row>
         </div>
@@ -124,7 +107,7 @@
               class="mx-auto"
             >
               <div class="vid-plan" :class="{ inverse: index % 2 !== 0 }">
-                <h6>{{ plan.planName }}</h6>
+                <h6>{{ plan.planPrice === '' ? 'Free' : plan.planName }}</h6>
                 <span>{{ plan.currency }}{{ plan.planPrice || 0 }}</span>
                 <hr />
                 <ul>
@@ -132,8 +115,15 @@
                     {{ item.planItem }}
                   </li>
                 </ul>
-                <div id="saasble_subscription">
+                <div v-if="plan.planPrice" id="saasble_subscription">
                   <el-button type="primary" size="small">Try out</el-button>
+                </div>
+                <div v-else>
+                  <nuxt-link :to="{ name: 'create' }"
+                    ><el-button type="primary" size="small"
+                      >Try out</el-button
+                    ></nuxt-link
+                  >
                 </div>
               </div>
             </el-col>

@@ -105,6 +105,10 @@
     outline: none;
   }
 
+  a, a:hover {
+    color: #fff;
+  }
+
   &.el-tooltip {
     opacity: 0.5;
 
