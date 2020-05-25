@@ -299,10 +299,10 @@ export default {
 
       const backgroundUrl = this.event.event_banner.split('.')
 
-      if (videoFormat.includes(backgroundUrl[backgroundUrl - 1])) {
+      if (videoFormat.includes(backgroundUrl[backgroundUrl.length - 1])) {
         this.backgroundType = 'video'
       } else if (
-        imageFormat.includes(backgroundUrl[backgroundUrl - 1]) ||
+        imageFormat.includes(backgroundUrl[backgroundUrl.length - 1]) ||
         this.event.event_banner.includes('unsplash') ||
         this.backgroundUrl.includes('unsplash')
       ) {

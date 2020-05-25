@@ -110,10 +110,11 @@ export default {
     }
   },
   created() {
-    if (this.$route.params.ref && Cookies.get('user_id')) {
+    const param = this.$route.params
+    if ((param.ref && Cookies.get('user_id')) || (param.ref && param.from)) {
       this.getEvent()
     } else {
-      this.$router.push({ name: 'index' })
+      this.$router.push({ name: 'home' })
     }
   },
   methods: {
@@ -130,6 +131,9 @@ export default {
             (response.userInfo.isPaid === 0 &&
               response.userInfo.allocations < 2)
           this.canIntegrate = response.userInfo.allocations === 'unlimited'
+          if (!Cookies.get('user_id')) {
+            Cookies.set('user_id', response.event.userId.userId)
+          }
           this.showLoaderDialog = false
         })
         .catch(() => {

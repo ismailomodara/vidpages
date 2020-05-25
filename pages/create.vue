@@ -2,6 +2,7 @@
   <div class="vid-create">
     <navbar />
     <div
+      v-if="videoProviders.length"
       class="vid-header"
       :style="{
         background: coverImage === 'color' ? `${backgroundUrl}` : false,
@@ -21,7 +22,7 @@
       ></div>
       <div class="container">
         <div class="vid-event-title">
-          <el-form :model="event">
+          <el-form ref="eventTitle" :model="event" :rules="titleRule">
             <el-form-item
               v-custom-input="event.event_name"
               class="vid-custom-input"
@@ -79,7 +80,7 @@
                     v-custom-input="event.video_provider"
                     class="vid-custom-input"
                     label="Video Provider"
-                    prop="event_video_provider"
+                    prop="video_provider"
                   >
                     <el-select
                       v-model="event.video_provider"
@@ -186,7 +187,6 @@
                   v-custom-input="event.event_name"
                   class="vid-custom-input"
                   label="Event Title"
-                  prop="event_name"
                 >
                   <el-input
                     v-model="event.event_name"
@@ -375,8 +375,10 @@ export default {
       setTimeout(() => {
         if (!urlReg.test(value)) {
           callback(new Error('Invalid url'))
+        } else {
+          callback()
         }
-      }, 1000)
+      }, 700)
     }
     return {
       loadingPage: true,
@@ -417,10 +419,20 @@ export default {
         zoom_meeting_password: '',
         user_email: ''
       },
+      titleRule: {
+        event_name: [
+          { required: true, message: 'Enter event name', trigger: 'change' }
+        ]
+      },
       rules: {
-        video_url: [
-          { required: true, validator: validateUrl, trigger: 'blur' }
+        video_provider: [
+          {
+            required: true,
+            trigger: 'change',
+            message: 'Select video provider'
+          }
         ],
+        video_url: [{ validator: validateUrl, trigger: 'blur' }],
         zoom_meeting_id: [
           {
             required: true,
@@ -523,29 +535,36 @@ export default {
       this.selectedVideoProvider = this.videoProviders[value]
     },
     createEvent() {
-      this.$refs.createEvent.validate((valid) => {
+      this.$refs.eventTitle.validate((valid) => {
         if (valid) {
-          this.event.event_banner = this.backgroundUrl
-          this.event.event_date = this.event.event_date.toString()
-          this.creatingEvent = true
-          request
-            .createEvent(this.event)
-            .then((response) => {
-              if (response.data.success) {
-                this.$message.success('Event created')
-                this.creatingEvent = false
-                this.$router.push({
-                  name: 'manage-ref',
-                  params: { ref: response.event_ref }
+          this.$refs.createEvent.validate((valid) => {
+            if (valid) {
+              this.event.event_banner = this.backgroundUrl
+              this.event.video_provider = this.selectedVideoProvider.provider
+              this.event.event_date = this.event.event_date.toString()
+              this.creatingEvent = true
+              request
+                .createEvent(this.event)
+                .then((response) => {
+                  if (response.data.success) {
+                    this.$message.success('Event created')
+                    this.creatingEvent = false
+                    this.$router.push({
+                      name: 'manage-ref',
+                      params: { ref: response.data.event_ref, from: 'created' }
+                    })
+                  } else {
+                    this.creatingEvent = false
+                  }
                 })
-              } else {
-                this.creatingEvent = false
-              }
-            })
-            .catch(() => {
-              this.creatingEvent = false
-              this.$message.error('Something went wrong')
-            })
+                .catch(() => {
+                  this.creatingEvent = false
+                  this.$message.error('Something went wrong')
+                })
+            } else {
+              return false
+            }
+          })
         } else {
           return false
         }
