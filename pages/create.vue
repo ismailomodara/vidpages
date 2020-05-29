@@ -367,7 +367,8 @@ export default {
     UpdateCoverImage
   },
   data() {
-    const urlReg = /^((ftp|http|https):\/\/)?(www\.)?([A-z]+)\.([A-z]{2,})/
+    // eslint-disable-next-line no-useless-escape
+    const urlReg = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
     const validateUrl = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('Enter meeting url'))
