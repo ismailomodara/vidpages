@@ -1,7 +1,7 @@
 <template>
   <div class="vid-manage">
     <div id="saasble_subscription">
-      <i class="vid-icon--credit-card"></i>
+      <i class="vid-icon--credit-card" @click="LoadSaasble"></i>
     </div>
     <navbar :inverse="true" />
     <div class="vid-event-summary">
@@ -118,6 +118,13 @@ export default {
     }
   },
   methods: {
+    LoadSaasble() {
+      window.InitSaasbleWidget({
+        email: 'dssssdwe@gmail.com',
+        token: 'sk_T6js4XxEp8JnBEJd7qCFQA',
+        planId: ''
+      })
+    },
     getEvent() {
       this.$store
         .dispatch('EVENT', this.$route.params.ref)
@@ -166,14 +173,18 @@ export default {
     return {
       script: [
         {
-          src:
-            'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'
+          src: 'https://saas-subscriptions.s3.amazonaws.com/saasble-bundle.js',
+          body: true
+        }
+      ],
+      link: [
+        {
+          rel: 'stylesheet',
+          href: 'https://saas-subscriptions.s3.amazonaws.com/main.css'
         },
         {
-          innerHTML: `!function(){if(window.sassblesubscription&&window.sassblesubscription.created)window.console&&console.error&&console.error("Saasble snippet included twice.")\n else{window.sassblesubscription={created:!0}\n var a=document.createElement("script")\n a.src="https://dashboard.saasble.com/dist/sub_mod.js"\n a.async=!0\n var b=document.getElementsByTagName("script")[0]\n b.parentNode.insertBefore(a,b),window.sassblesubscription.params = {secret: "738ea4f7-0dc0-41fa-b40e-fdf09f39c6c9", customer_oid: "<example_customer_123>" ,customer_email: "<example_customer_123>", provider_oid: "<example_customer_123>" ,plan_id: "<plan_123>" }}}()`,
-          type: 'text/javascript',
-          body: true,
-          defer: true
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css?family=Raleway'
         }
       ]
     }
