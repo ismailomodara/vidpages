@@ -98,6 +98,9 @@
                     type="date"
                     format="dd-MMMM-yyyy"
                     prefix-icon="vid-icon--calendar"
+                    :picker-options="{
+                      disabledDate: disabledDates
+                    }"
                   >
                   </el-date-picker> </el-form-item
               ></el-col>
@@ -160,6 +163,7 @@
                 >
                   <el-input
                     v-model="event.event_public_url"
+                    :disabled="!isUserPaid"
                     type="text"
                     auto-complete="off"
                     prefix-icon="vid-icon--chrome"
@@ -236,6 +240,7 @@
             <el-button
               type="primary"
               size="large"
+              :disabled="!new Date(event.event_date) > new Date()"
               :loading="updatingEvent"
               @click="updateEvent"
               >Update</el-button
@@ -283,7 +288,8 @@ export default {
       },
       hashtags: [],
       responseEvent: {},
-      updatingEvent: false
+      updatingEvent: false,
+      isUserPaid: 0
     }
   },
   computed: {
@@ -303,6 +309,9 @@ export default {
     }
   },
   methods: {
+    disabledDates(time) {
+      return time.getTime() < new Date().getTime()
+    },
     setBackgroundType() {
       const videoFormat = ['mp4', 'mov', '3gp']
       const imageFormat = ['jpg', 'jpeg', 'png']
@@ -335,6 +344,7 @@ export default {
         this.responseEvent[convertedKey] = responseEvent[key]
       }
       this.event = { ...this.responseEvent }
+      this.isUserPaid = this.$store.state.event.userInfo.isPaid
       if (!this.event.event_social_hashtag) {
         this.generateHashtag(this.event.event_name)
       }

@@ -226,6 +226,9 @@
                     value-format=""
                     type="date"
                     format="dd-MMMM-yyyy"
+                    :picker-options="{
+                      disabledDate: disabledDates
+                    }"
                     prefix-icon="vid-icon--calendar"
                   >
                   </el-date-picker> </el-form-item
@@ -367,19 +370,15 @@ export default {
     UpdateCoverImage
   },
   data() {
-    // eslint-disable-next-line no-useless-escape
-    const urlReg = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
     const validateUrl = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('Enter meeting url'))
+      const urlReg = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,256}\b([-a-zA-Z0-9@:%_.~#?&//=]*)/g
+      if (value === '') {
+        callback(new Error('Please meeting url'))
+      } else if (urlReg.test(value) === false) {
+        callback(new Error('Invalid url'))
+      } else {
+        callback()
       }
-      setTimeout(() => {
-        if (!urlReg.test(value)) {
-          callback(new Error('Invalid url'))
-        } else {
-          callback()
-        }
-      }, 700)
     }
     return {
       loadingPage: true,
@@ -433,7 +432,9 @@ export default {
             message: 'Select video provider'
           }
         ],
-        video_url: [{ validator: validateUrl, trigger: 'blur' }],
+        video_url: [
+          { required: true, validator: validateUrl, trigger: 'change' }
+        ],
         zoom_meeting_id: [
           {
             required: true,
@@ -535,7 +536,11 @@ export default {
     setVideoProvider(value) {
       this.selectedVideoProvider = this.videoProviders[value]
     },
+    disabledDates(time) {
+      return time.getTime() < new Date().getTime()
+    },
     createEvent() {
+      this.creatingEvent = true
       this.$refs.eventTitle.validate((valid) => {
         if (valid) {
           this.$refs.createEvent.validate((valid) => {
@@ -543,30 +548,31 @@ export default {
               this.event.event_banner = this.backgroundUrl
               this.event.video_provider = this.selectedVideoProvider.provider
               this.event.event_date = this.event.event_date.toString()
-              this.creatingEvent = true
-              request
-                .createEvent(this.event)
-                .then((response) => {
-                  if (response.data.success) {
-                    this.$message.success('Event created')
-                    this.creatingEvent = false
-                    this.$router.push({
-                      name: 'manage-ref',
-                      params: { ref: response.data.event_ref, from: 'created' }
-                    })
-                  } else {
-                    this.creatingEvent = false
-                  }
-                })
-                .catch(() => {
-                  this.creatingEvent = false
-                  this.$message.error('Something went wrong')
-                })
+              // request
+              //   .createEvent(this.event)
+              //   .then((response) => {
+              //     if (response.data.success) {
+              //       this.$message.success('Event created')
+              //       this.creatingEvent = false
+              //       this.$router.push({
+              //         name: 'manage-ref',
+              //         params: { ref: response.data.event_ref, from: 'created' }
+              //       })
+              //     } else {
+              //       this.creatingEvent = false
+              //     }
+              //   })
+              //   .catch(() => {
+              //     this.creatingEvent = false
+              //     this.$message.error('Something went wrong')
+              //   })
             } else {
+              this.creatingEvent = false
               return false
             }
           })
         } else {
+          this.creatingEvent = false
           return false
         }
       })

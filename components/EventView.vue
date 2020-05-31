@@ -187,7 +187,7 @@
                 </div></template
               >
             </countdown>
-            <el-dropdown class="mt-3">
+            <el-dropdown v-if="isUserRegistered" class="mt-3">
               <el-button type="outline">Add To Calendar</el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -199,6 +199,13 @@
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <el-button
+              v-else
+              type="outline"
+              class="mt-3"
+              @click="scrollTo('register')"
+              >Add To Calendar</el-button
+            >
           </div>
         </div>
       </div>
@@ -558,10 +565,10 @@ export default {
 
       const backgroundUrl = this.event.eventBanner.split('.')
 
-      if (videoFormat.includes(backgroundUrl[backgroundUrl - 1])) {
+      if (videoFormat.includes(backgroundUrl[backgroundUrl.length - 1])) {
         this.backgroundType = 'video'
       } else if (
-        imageFormat.includes(backgroundUrl[backgroundUrl - 1]) ||
+        imageFormat.includes(backgroundUrl[backgroundUrl.length - 1]) ||
         this.event.eventBanner.includes('unsplash')
       ) {
         this.backgroundType = 'image'
