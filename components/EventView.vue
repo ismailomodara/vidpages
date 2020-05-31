@@ -719,78 +719,76 @@ export default {
         type: 'success'
       })
     }
+  },
+  head() {
+    return {
+      title: this.event.eventName,
+      meta: [
+        { itemprop: 'name', content: this.event.eventName },
+        { itemprop: 'description', content: this.event.eventDetails },
+        {
+          itemprop: 'image',
+          content:
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? this.event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+        // Twitter Card data
+        {
+          hid: 'twitterTitle',
+          name: 'twitter:title',
+          content: this.event.eventName
+        },
+        {
+          hid: 'twitterUrl',
+          name: 'twitter:url',
+          content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
+        },
+        {
+          hid: 'twitterImage',
+          name: 'twitter:image',
+          content:
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+        {
+          hid: 'twitterDescription',
+          name: 'twitter:description',
+          content: this.event.eventDetails
+        },
+        // Twitter summary card with large image must be at least 280x150px
+        {
+          hid: 'twitterImageSrc',
+          name: 'twitter:image:src',
+          content:
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? this.event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+        // Open Graph data
+        { hid: 'ogTitle', property: 'og:title', content: this.event.eventName },
+        {
+          hid: 'ogUrl',
+          property: 'og:url',
+          content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
+        },
+        {
+          hid: 'ogImage',
+          property: 'og:image',
+          content:
+            this.backgroundType === 'image' || this.backgroundType === 'video'
+              ? this.event.eventBanner
+              : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
+        },
+        {
+          hid: 'ogDescription',
+          property: 'og:description',
+          content: this.event.eventDetails
+        }
+      ]
+    }
   }
-  // head() {
-  //   return {
-  //     title: this.event.eventName,
-  //     meta: [
-  //       { itemprop: 'name', content: this.event.eventName },
-  //       { itemprop: 'description', content: this.event.eventDetails },
-  //       {
-  //         itemprop: 'image',
-  //         content:
-  //           this.backgroundType === 'image' || this.backgroundType === 'video'
-  //             ? event.eventBanner
-  //             : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
-  //       },
-  //
-  //       // Twitter Card data
-  //       {
-  //         hid: 'twitterTitle',
-  //         name: 'twitter:title',
-  //         content: this.event.eventName
-  //       },
-  //       {
-  //         hid: 'twitterUrl',
-  //         name: 'twitter:url',
-  //         content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
-  //       },
-  //       {
-  //         hid: 'twitterImage',
-  //         name: 'twitter:image',
-  //         content:
-  //           this.backgroundType === 'image' || this.backgroundType === 'video'
-  //             ? event.eventBanner
-  //             : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
-  //       },
-  //       {
-  //         hid: 'twitterDescription',
-  //         name: 'twitter:description',
-  //         content: this.event.eventDetails
-  //       },
-  //       // Twitter summary card with large image must be at least 280x150px
-  //       {
-  //         hid: 'twitterImageSrc',
-  //         name: 'twitter:image:src',
-  //         content:
-  //           this.backgroundType === 'image' || this.backgroundType === 'video'
-  //             ? this.event.eventBanner
-  //             : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
-  //       },
-  //
-  //       // Open Graph data
-  //       { hid: 'ogTitle', property: 'og:title', content: this.event.eventName },
-  //       {
-  //         hid: 'ogUrl',
-  //         property: 'og:url',
-  //         content: `https://vidrl.netlify.app/event/${this.$route.params.eventRef}`
-  //       },
-  //       {
-  //         hid: 'ogImage',
-  //         property: 'og:image',
-  //         content:
-  //           this.backgroundType === 'image' || this.backgroundType === 'video'
-  //             ? this.event.eventBanner
-  //             : 'https://res.cloudinary.com/da8zzhkwy/image/upload/v1588800785/seo/seo-card_ekliop.png'
-  //       },
-  //       {
-  //         hid: 'ogDescription',
-  //         property: 'og:description',
-  //         content: this.event.eventDetails
-  //       }
-  //     ]
-  //   }
-  // }
 }
 </script>
 
