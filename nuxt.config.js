@@ -79,12 +79,26 @@ export default {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
+      {
+        rel: 'stylesheet',
+        href: 'https://saas-subscriptions.s3.amazonaws.com/main.css'
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css?family=Raleway'
+      }
+    ],
     script: [
       {
         src: 'https://js.hs-scripts.com/7636004.js',
         defer: true,
         type: 'text/javascript'
+      },
+      {
+        src: 'https://saas-subscriptions.s3.amazonaws.com/saasble-bundle.js',
+        body: true
       }
     ]
   },

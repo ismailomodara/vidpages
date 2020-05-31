@@ -194,7 +194,7 @@
               </el-col>
             </el-row>
             <el-row type="flex" class="flex-wrap">
-              <el-col :md="8">
+              <el-col :xs="24" :sm="12" :md="6">
                 <el-form-item label="Is this a paid event?">
                   <el-switch
                     v-model="event.paid"
@@ -203,7 +203,16 @@
                   ></el-switch>
                 </el-form-item>
               </el-col>
-              <el-col :md="8">
+              <el-col v-if="event.paid" :xs="24" :sm="12" :md="6">
+                <el-form-item label="Allow phone number">
+                  <el-switch
+                    v-model="event.allow_phone_number"
+                    :active-value="1"
+                    :inactive-value="0"
+                  ></el-switch>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="6">
                 <el-form-item label="Allow only RSVPs">
                   <el-switch
                     v-model="event.rsvp"
@@ -212,7 +221,7 @@
                   ></el-switch>
                 </el-form-item>
               </el-col>
-              <el-col v-if="event.rsvp === 1" :md="8">
+              <el-col v-if="event.rsvp" :xs="24" :sm="12" :md="6">
                 <el-form-item label="Manually Approve RSVPs">
                   <el-switch
                     v-model="event.require_manual_approval"
@@ -264,6 +273,7 @@ export default {
         event_start_time: '',
         event_duration: '',
         paid: '',
+        allow_phone_number: '',
         rsvp: '',
         event_ref: '',
         event_video_url: '',

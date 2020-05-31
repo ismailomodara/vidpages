@@ -23,6 +23,7 @@
           <div>
             <p class="event-status">{{ event.eventStatus }}</p>
             <h1>{{ event.eventName }}</h1>
+            <p class="event-desc">{{ event.eventDetails }}</p>
             <el-button
               v-if="eventActive"
               type="white"
@@ -277,7 +278,7 @@
         </div>
       </div>
     </section>
-    <section v-if="plans.length" class="vid-plans">
+    <section v-if="plans.length && event.paid" ref="register" class="vid-plans">
       <div class="container">
         <h4 class="section-heading">PLANS</h4>
         <el-row type="flex" class="flex-wrap mt-5" :gutter="30">
@@ -294,8 +295,8 @@
                 <h2>{{ plan.eventPlanCurrency }} {{ plan.eventPlanAmount }}</h2>
                 <p>{{ plan.eventPlanDetails }}</p>
                 <el-button
-                  size="small"
                   v-if="eventActive"
+                  size="small"
                   type="white"
                   @click="setAttendeePlan(plan.eventPlanRef)"
                   >Pay To Attend</el-button
@@ -306,7 +307,7 @@
         </el-row>
       </div>
     </section>
-    <section v-if="!plans.length && eventActive" ref="register" class="vid-cta">
+    <section v-if="!event.paid && eventActive" ref="register" class="vid-cta">
       <div class="container">
         <p>Register for this event now!</p>
         <el-form
@@ -315,11 +316,35 @@
           :rules="rules"
           label-position="top"
         >
-          <el-row type="flex" class="flex-wrap">
+          <el-row
+            v-if="event.allowPhoneNumber"
+            type="flex"
+            class="flex-wrap"
+            :gutter="20"
+          >
+            <el-col :md="12"
+              ><el-form-item label="Your email" prop="attendee_email">
+                <el-input
+                  v-model="attend.attendee_email"
+                ></el-input> </el-form-item
+            ></el-col>
+            <el-col :md="12"
+              ><el-form-item
+                v-only-number
+                label="Your phone number"
+                prop="attendee_phone_number"
+              >
+                <el-input
+                  v-model="attend.attendee_phone_number"
+                ></el-input> </el-form-item
+            ></el-col>
+          </el-row>
+          <el-row v-else type="flex" class="flex-wrap">
             <el-col :md="24"
               ><el-form-item label="" prop="attendee_email">
                 <el-input
                   v-model="attend.attendee_email"
+                  maxlength="11"
                 ></el-input> </el-form-item
             ></el-col>
           </el-row>
@@ -327,8 +352,7 @@
             <el-col
               v-for="(question, index) in attend.questions"
               :key="index"
-              :sm="24"
-              :md="12"
+              :md="24"
             >
               <el-form-item :label="question.question">
                 <el-input v-model="question.answer" type="text" />
@@ -345,21 +369,43 @@
         >
       </div>
     </section>
-    <el-dialog width="40%" :visible.sync="showPaymentDialog">
+    <el-dialog width="50%" :visible.sync="showPaymentDialog">
       <div v-loading="paying" class="payment-form">
         <el-form ref="payToAttendForm" :model="attend" :rules="rules">
           <h5 class="mb-3">Please provide the required details</h5>
-          <el-row type="flex" class="flex-wrap">
-            <el-col :span="24"
+          <el-row
+            v-if="event.allowPhoneNumber"
+            type="flex"
+            class="flex-wrap"
+            :gutter="20"
+          >
+            <el-col :md="12"
               ><el-form-item label="Your email" prop="attendee_email">
                 <el-input
                   v-model="attend.attendee_email"
-                  type="text"
-                  auto-complete="on"
+                ></el-input> </el-form-item
+            ></el-col>
+            <el-col :md="12"
+              ><el-form-item
+                v-only-number
+                label="Your number"
+                prop="attendee_phone_number"
+              >
+                <el-input
+                  v-model="attend.attendee_phone_number"
+                  maxlength="11"
                 ></el-input> </el-form-item
             ></el-col>
           </el-row>
-          <el-row type="flex" class="flex-wrap" :gutter="30">
+          <el-row v-else type="flex" class="flex-wrap">
+            <el-col :md="24"
+              ><el-form-item label="Your email" prop="attendee_email">
+                <el-input
+                  v-model="attend.attendee_email"
+                ></el-input> </el-form-item
+            ></el-col>
+          </el-row>
+          <el-row type="flex" class="flex-wrap">
             <el-col
               v-for="(question, index) in attend.questions"
               :key="index"
@@ -417,6 +463,7 @@ export default {
       plans: [],
       attend: {
         attendee_email: '',
+        attendee_phone_number: '',
         event_ref: '',
         questions: []
       },
@@ -833,9 +880,14 @@ export default {
         h1 {
           font-size: 4.5rem;
           font-weight: 600;
-          margin-bottom: 5px;
           width: 100%;
-          line-height: 1.4;
+          line-height: 1.2;
+        }
+
+        .event-desc {
+          font-size: 1rem;
+          color: #fff;
+          margin-bottom: 20px;
         }
 
         .vid-event-calendar {
@@ -1103,7 +1155,7 @@ export default {
     background: #222151;
 
     .el-form {
-      width: 50%;
+      width: 60%;
 
       .el-form-item__content .el-input {
         width: 100%;

@@ -1,7 +1,7 @@
 <template>
   <div class="vid-manage">
-    <div id="saasble_subscription">
-      <i class="vid-icon--credit-card" @click="LoadSaasble"></i>
+    <div id="saasble_subscription" @click="LoadSaasble">
+      <i class="vid-icon--credit-card"></i>
     </div>
     <navbar :inverse="true" />
     <div class="vid-event-summary">
@@ -167,26 +167,6 @@ export default {
     },
     setActiveIndex(index) {
       this.activeIndex = index
-    }
-  },
-  head() {
-    return {
-      script: [
-        {
-          src: 'https://saas-subscriptions.s3.amazonaws.com/saasble-bundle.js',
-          body: true
-        }
-      ],
-      link: [
-        {
-          rel: 'stylesheet',
-          href: 'https://saas-subscriptions.s3.amazonaws.com/main.css'
-        },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css?family=Raleway'
-        }
-      ]
     }
   }
 }

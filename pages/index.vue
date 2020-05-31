@@ -119,7 +119,7 @@
                     {{ item.planItem }}
                   </li>
                 </ul>
-                <div v-if="plan.planPrice" id="saasble_subscription">
+                <div v-if="plan.planPrice" @click="LoadSaasble(plan.planRef)">
                   <el-button type="primary" size="small">Try out</el-button>
                 </div>
                 <div v-else>
@@ -202,6 +202,13 @@ export default {
     this.fetchAllVideoProviders()
   },
   methods: {
+    LoadSaasble(planId) {
+      window.InitSaasbleWidget({
+        email: 'dssssdwe@gmail.com',
+        token: 'sk_T6js4XxEp8JnBEJd7qCFQA',
+        planId
+      })
+    },
     async fetchAllVideoProviders() {
       await request
         .getVideoProviders()
@@ -231,22 +238,6 @@ export default {
           }
         })
         .catch()
-    }
-  },
-  head() {
-    return {
-      script: [
-        {
-          src:
-            'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'
-        },
-        {
-          innerHTML: `!function(){if(window.sassblesubscription&&window.sassblesubscription.created)window.console&&console.error&&console.error("Saasble snippet included twice.")\n else{window.sassblesubscription={created:!0}\n var a=document.createElement("script")\n a.src="https://dashboard.saasble.com/dist/sub_mod.js"\n a.async=!0\n var b=document.getElementsByTagName("script")[0]\n b.parentNode.insertBefore(a,b),window.sassblesubscription.params = {secret: "738ea4f7-0dc0-41fa-b40e-fdf09f39c6c9", customer_oid: "<example_customer_123>" ,customer_email: "<example_customer_123>", provider_oid: "<example_customer_123>" ,plan_id: "<plan_123>" }}}()`,
-          type: 'text/javascript',
-          body: true,
-          defer: true
-        }
-      ]
     }
   }
 }
