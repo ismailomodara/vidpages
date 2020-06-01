@@ -548,24 +548,24 @@ export default {
               this.event.event_banner = this.backgroundUrl
               this.event.video_provider = this.selectedVideoProvider.provider
               this.event.event_date = this.event.event_date.toString()
-              // request
-              //   .createEvent(this.event)
-              //   .then((response) => {
-              //     if (response.data.success) {
-              //       this.$message.success('Event created')
-              //       this.creatingEvent = false
-              //       this.$router.push({
-              //         name: 'manage-ref',
-              //         params: { ref: response.data.event_ref, from: 'created' }
-              //       })
-              //     } else {
-              //       this.creatingEvent = false
-              //     }
-              //   })
-              //   .catch(() => {
-              //     this.creatingEvent = false
-              //     this.$message.error('Something went wrong')
-              //   })
+              request
+                .createEvent(this.event)
+                .then((response) => {
+                  if (response.data.success) {
+                    this.$message.success('Event created')
+                    this.creatingEvent = false
+                    this.$router.push({
+                      name: 'manage-ref',
+                      params: { ref: response.data.event_ref, from: 'created' }
+                    })
+                  } else {
+                    this.creatingEvent = false
+                  }
+                })
+                .catch(() => {
+                  this.creatingEvent = false
+                  this.$message.error('Something went wrong')
+                })
             } else {
               this.creatingEvent = false
               return false
