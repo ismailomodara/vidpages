@@ -343,6 +343,7 @@
               >
                 <el-input
                   v-model="attend.attendee_phone_number"
+                  maxlength="11"
                 ></el-input> </el-form-item
             ></el-col>
           </el-row>
@@ -351,7 +352,6 @@
               ><el-form-item label="" prop="attendee_email">
                 <el-input
                   v-model="attend.attendee_email"
-                  maxlength="11"
                 ></el-input> </el-form-item
             ></el-col>
           </el-row>

@@ -63,10 +63,10 @@
                 <div
                   v-if="selectedVideoProvider.provider.toLowerCase() === 'zoom'"
                 >
-                  <el-radio v-model="meetingChoice" label="1" border
+                  <el-radio v-model="meetingChoice" :label="1" border
                     >Create Meeting For Me</el-radio
                   >
-                  <el-radio v-model="meetingChoice" label="2" border
+                  <el-radio v-model="meetingChoice" :label="2" border
                     >Manually Enter Details</el-radio
                   >
                 </div>
@@ -115,7 +115,7 @@
               </el-row>
             </template>
           </div>
-          <div v-if="meetingChoice === '1'" class="vid-section">
+          <div v-if="meetingChoice === 1" class="vid-section">
             <el-checkbox v-model="createMeeting.room"
               >Use personal meeting room</el-checkbox
             >
@@ -124,7 +124,7 @@
             >
           </div>
           <div
-            v-if="meetingChoice === '2' || selectedVideoProvider"
+            v-if="meetingChoice === 2 && selectedVideoProvider"
             class="vid-section"
           >
             <h6>{{ selectedVideoProvider.provider }} Info</h6>
@@ -273,7 +273,7 @@
                   v-custom-input="event.event_duration"
                   v-only-number
                   class="vid-custom-input"
-                  label="Duration (hours)"
+                  label="Duration (minutes)"
                   prop="event_duration"
                 >
                   <el-input
@@ -293,6 +293,7 @@
                   <el-input
                     v-model="event.event_ref"
                     type="text"
+                    disabled
                     auto-complete="off"
                     prefix-icon="vid-icon--chrome"
                   ></el-input> </el-form-item
@@ -389,7 +390,7 @@ export default {
       updateCoverImage: false,
       backgroundUrl: '',
       backgroundType: '',
-      meetingChoice: '',
+      meetingChoice: null,
       createMeeting: {
         room: false,
         password: false
@@ -492,10 +493,11 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.user_id) {
+    if (this.$route.query.status) {
       this.isLoggedInVia = true
       this.setProvider()
     }
+    console.log(this.$route)
     this.fetchAllVideoProviders()
     this.generateRef()
   },
@@ -510,6 +512,8 @@ export default {
         this.selectedVideoProvider = {
           provider: data.provider
         }
+        this.meetingChoice =
+          this.selectedVideoProvider.provider.toLowerCase() !== 'zoom' ? 1 : 0
       }
     },
     async fetchAllVideoProviders() {
@@ -567,11 +571,21 @@ export default {
                   this.$message.error('Something went wrong')
                 })
             } else {
+              this.$message({
+                type: 'error',
+                message: 'Please input all required fields',
+                duration: 5000
+              })
               this.creatingEvent = false
               return false
             }
           })
         } else {
+          this.$message({
+            type: 'error',
+            message: 'You need to enter an event name',
+            duration: 5000
+          })
           this.creatingEvent = false
           return false
         }
