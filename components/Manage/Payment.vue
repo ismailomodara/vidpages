@@ -154,7 +154,7 @@ import request from '../../controller/request'
 import { convertCase } from '../../plugins/case-converter'
 import PaymentAction from '../Payment/PaymentAction'
 
-const sha512 = require('js-sha512')
+// const sha512 = require('js-sha512')
 
 export default {
   name: 'Payment',
@@ -223,7 +223,7 @@ export default {
     },
     updateEvent() {
       this.loading = true
-      console.log(sha512(this.payment.event_payment_provider_public))
+      // console.log(sha512(this.payment.event_payment_provider_public))
       // await request
       //   .createEvent(this.payment)
       //   .then((response) => {

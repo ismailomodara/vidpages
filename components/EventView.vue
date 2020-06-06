@@ -25,7 +25,7 @@
             <h1>{{ event.eventName }}</h1>
             <p class="event-desc">{{ event.eventDetails }}</p>
             <el-button
-              v-if="eventActive"
+              v-if="eventActive && !isUserRegistered"
               type="white"
               @click="scrollTo('register')"
               >Register For This Event</el-button
@@ -38,15 +38,11 @@
               </h5>
               <div class="like-event">
                 <img
-                  v-if="like"
+                  v-if="eventLiked"
                   src="@/assets/img/like.svg"
                   @click="like = !like"
                 />
-                <img
-                  v-if="!like"
-                  src="@/assets/img/unlike.svg"
-                  @click="likeEvent"
-                />
+                <img v-else src="@/assets/img/unlike.svg" @click="likeEvent" />
               </div>
               <el-dropdown>
                 <div v-loading="gettingSocialLinks" class="share-event">
@@ -285,97 +281,115 @@
         </div>
       </div>
     </section>
-    <section v-if="plans.length && event.paid" ref="register" class="vid-plans">
-      <div class="container">
-        <h4 class="section-heading">PLANS</h4>
-        <el-row type="flex" class="flex-wrap mt-5" :gutter="30">
-          <el-col
-            v-for="(plan, index) in plans"
-            :key="index"
-            :xs="24"
-            :sm="12"
-            :md="8"
-          >
-            <div class="vid-attendees-container">
-              <div class="payment-plan">
-                <h4>{{ plan.eventPlanName }}</h4>
-                <h2>{{ plan.eventPlanCurrency }} {{ plan.eventPlanAmount }}</h2>
-                <p>{{ plan.eventPlanDetails }}</p>
-                <el-button
-                  v-if="eventActive"
-                  size="small"
-                  type="white"
-                  @click="setAttendeePlan(plan.eventPlanRef)"
-                  >Pay To Attend</el-button
-                >
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </section>
-    <section v-if="!event.paid && eventActive" ref="register" class="vid-cta">
-      <div class="container">
-        <p>Register for this event now!</p>
-        <el-form
-          ref="registerForm"
-          :model="attend"
-          :rules="rules"
-          label-position="top"
-        >
-          <el-row
-            v-if="event.allowPhoneNumber"
-            type="flex"
-            class="flex-wrap"
-            :gutter="20"
-          >
-            <el-col :md="12"
-              ><el-form-item label="Your email" prop="attendee_email">
-                <el-input
-                  v-model="attend.attendee_email"
-                ></el-input> </el-form-item
-            ></el-col>
-            <el-col :md="12"
-              ><el-form-item
-                v-only-number
-                label="Your phone number"
-                prop="attendee_phone_number"
-              >
-                <el-input
-                  v-model="attend.attendee_phone_number"
-                  maxlength="11"
-                ></el-input> </el-form-item
-            ></el-col>
-          </el-row>
-          <el-row v-else type="flex" class="flex-wrap">
-            <el-col :md="24"
-              ><el-form-item label="" prop="attendee_email">
-                <el-input
-                  v-model="attend.attendee_email"
-                ></el-input> </el-form-item
-            ></el-col>
-          </el-row>
-          <el-row type="flex" class="flex-wrap" :gutter="30">
+    <template v-if="!isUserRegistered">
+      <section
+        v-if="plans.length && event.paid"
+        ref="register"
+        class="vid-plans"
+      >
+        <div class="container">
+          <h4 class="section-heading">PLANS</h4>
+          <el-row type="flex" class="flex-wrap mt-5" :gutter="30">
             <el-col
-              v-for="(question, index) in attend.questions"
+              v-for="(plan, index) in plans"
               :key="index"
-              :md="24"
+              :xs="24"
+              :sm="12"
+              :md="8"
             >
-              <el-form-item :label="question.question">
-                <el-input v-model="question.answer" type="text" />
-              </el-form-item>
+              <div class="vid-attendees-container">
+                <div class="payment-plan">
+                  <h4>{{ plan.eventPlanName }}</h4>
+                  <h2>
+                    {{ plan.eventPlanCurrency }} {{ plan.eventPlanAmount }}
+                  </h2>
+                  <p>{{ plan.eventPlanDetails }}</p>
+                  <el-button
+                    v-if="eventActive"
+                    size="small"
+                    type="white"
+                    @click="setAttendeePlan(plan.eventPlanRef)"
+                    >Pay To Attend</el-button
+                  >
+                </div>
+              </div>
             </el-col>
           </el-row>
-        </el-form>
-        <el-button
-          :loading="attending"
-          type="white"
-          placeholder="you@mail.com"
-          @click="attendEvent"
-          >Attend</el-button
-        >
-      </div>
-    </section>
+        </div>
+      </section>
+      <section v-if="!event.paid && eventActive" ref="register" class="vid-cta">
+        <div class="container">
+          <p>Register for this event now!</p>
+          <el-form
+            ref="registerForm"
+            :model="attend"
+            :rules="rules"
+            label-position="top"
+          >
+            <el-row
+              v-if="event.allowPhoneNumber"
+              type="flex"
+              class="flex-wrap"
+              :gutter="20"
+            >
+              <el-col :md="12"
+                ><el-form-item label="Your email" prop="attendee_email">
+                  <el-input
+                    v-model="attend.attendee_email"
+                  ></el-input> </el-form-item
+              ></el-col>
+              <el-col :md="12"
+                ><el-form-item
+                  v-only-number
+                  label="Your phone number"
+                  prop="attendee_phone_number"
+                >
+                  <el-input
+                    v-model="attend.attendee_phone_number"
+                    maxlength="11"
+                  ></el-input> </el-form-item
+              ></el-col>
+            </el-row>
+            <el-row v-else type="flex" class="flex-wrap">
+              <el-col :md="24"
+                ><el-form-item label="" prop="attendee_email">
+                  <el-input
+                    v-model="attend.attendee_email"
+                  ></el-input> </el-form-item
+              ></el-col>
+            </el-row>
+            <el-row type="flex" class="flex-wrap" :gutter="30">
+              <el-col
+                v-for="(question, index) in attend.questions"
+                :key="index"
+                :md="24"
+              >
+                <el-form-item :label="question.question">
+                  <el-input v-model="question.answer" type="text" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <el-button
+            :loading="attending"
+            type="white"
+            placeholder="you@mail.com"
+            @click="attendEvent"
+            >Attend</el-button
+          >
+        </div>
+      </section>
+    </template>
+    <template v-else>
+      <section class="vid-cta">
+        <div class="container">
+          <h4>You are already registered for this event</h4>
+          <el-button type="white" @click="scrollTo('eventDetails')"
+            >See details</el-button
+          >
+        </div>
+      </section>
+    </template>
     <el-dialog width="50%" :visible.sync="showPaymentDialog">
       <div v-loading="paying" class="payment-form">
         <el-form ref="payToAttendForm" :model="attend" :rules="rules">
@@ -500,7 +514,8 @@ export default {
         linkdeln: ''
       },
       clientIdCalender: 'afXHuZxmQzqnsQSJXmZx86885',
-      isUserRegistered: false
+      isUserRegistered: false,
+      eventLiked: false
     }
   },
   computed: {
@@ -550,11 +565,6 @@ export default {
       this.$router.push({ name: 'index' })
     }
   },
-  mounted() {
-    if (Cookies.get('is-registered')) {
-      this.isUserRegistered = true
-    }
-  },
   methods: {
     scrollTo(ref) {
       this.$refs[ref].scrollIntoView()
@@ -591,6 +601,12 @@ export default {
           this.attend.event_ref = response.data.event.eventRef
           this.setBackgroundType()
           this.shareEvent()
+          if (Cookies.get(`is-registered-${this.event.eventRef}`)) {
+            this.isUserRegistered = true
+          }
+          if (Cookies.get(`is-event-liked-${this.event.eventRef}`)) {
+            this.eventLiked = true
+          }
           this.showDialog = false
         } else {
           this.$message.error('Unable to get requested Event.')
@@ -600,9 +616,11 @@ export default {
       })
     },
     likeEvent() {
-      this.like = !this.like
+      this.eventLiked = true
       request.likeEvent(this.event.eventRef).then((response) => {
         if (response.data.success) {
+          this.eventLiked = true
+          Cookies.set(`is-event-liked-${this.event.eventRef}`, true)
         }
       })
     },
@@ -636,7 +654,7 @@ export default {
               this.$refs.registerForm.resetFields()
               this.attend.questions = []
               this.isUserRegistered = true
-              Cookies.set('is-registered', true)
+              Cookies.set(`is-registered-${this.event.eventRef}`, true)
               this.$refs.eventDetails.scrollIntoView()
               this.attending = false
             } else {
@@ -652,7 +670,7 @@ export default {
       request.registerForEvent(payload).then((response) => {
         if (response.data.success) {
           this.isUserRegistered = true
-          Cookies.set('is-registered', true)
+          Cookies.set(`is-registered-${this.event.eventRef}`, true)
         }
       })
     },
@@ -1167,6 +1185,7 @@ export default {
       }
     }
 
+    h4,
     p {
       color: #fff;
       margin-bottom: 15px;
