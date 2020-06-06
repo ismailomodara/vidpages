@@ -83,11 +83,7 @@
         </div>
       </div>
     </div>
-    <section
-      v-if="event.paid || event.rsvp"
-      ref="eventDetails"
-      class="vid-event-details"
-    >
+    <section ref="eventDetails" class="vid-event-details">
       <div class="container">
         <p class="mb-5">Event Details</p>
         <el-row type="flex" :gutter="30" class="flex-wrap">
