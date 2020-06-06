@@ -122,7 +122,7 @@ export default {
    ** Plugins to load before mounting the App
    */
   plugins: [
-    { src: '~/plugins/element-ui', ssr: true },
+    '@/plugins/element-ui',
     '@/plugins/directives',
     { src: '~/plugins/countdown', ssr: false },
     { src: '~/plugins/downloadCsv', ssr: false }
