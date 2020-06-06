@@ -87,12 +87,12 @@
       <div class="container">
         <p class="mb-5">Event Details</p>
         <el-row type="flex" :gutter="30" class="flex-wrap">
-          <el-col :sm="24" :md="8">
+          <el-col :md="24">
             <div class="vid-event-detail">
               <span class="title">Meeting URL</span>
               <span class="value"
-                >{{ isUserRegistered ? event.eventVideoUrl : 'XXXXXXXXXXX' }}
-                <span v-if="event.eventVideoUrl && isUserRegistered">
+                >{{ showEventDetails ? event.eventVideoUrl : 'XXXXXXXXXXX' }}
+                <span v-if="event.eventVideoUrl && showEventDetails">
                   <el-input
                     v-model="event.eventVideoUrl"
                     class="vid-event-url"
@@ -108,12 +108,12 @@
               </span>
             </div>
           </el-col>
-          <el-col :sm="24" :md="8">
+          <el-col :sm="24" :md="12">
             <div class="vid-event-detail">
               <span class="title">Meeting ID</span>
               <span class="value"
-                >{{ isUserRegistered ? event.eventZoomMeetingId : 'XXXXXXXXXXX'
-                }}<span v-if="event.eventZoomMeetingId && isUserRegistered">
+                >{{ showEventDetails ? event.eventZoomMeetingId : 'XXXXXXXXXXX'
+                }}<span v-if="event.eventZoomMeetingId && showEventDetails">
                   <el-input
                     v-model="event.eventZoomMeetingId"
                     class="vid-event-id"
@@ -125,16 +125,16 @@
               ></span>
             </div>
           </el-col>
-          <el-col :sm="24" :md="8"
+          <el-col :sm="24" :md="12"
             ><div class="vid-event-detail">
               <span class="title">Meeting Password</span>
               <span class="value"
                 >{{
-                  isUserRegistered
+                  showEventDetails
                     ? event.eventZoomMeetingPassword
                     : 'XXXXXXXXXXX'
                 }}<span
-                  v-if="event.eventZoomMeetingPassword && isUserRegistered"
+                  v-if="event.eventZoomMeetingPassword && showEventDetails"
                 >
                   <el-input
                     v-model="event.eventZoomMeetingPassword"
@@ -277,115 +277,121 @@
         </div>
       </div>
     </section>
-    <template v-if="!isUserRegistered">
-      <section
-        v-if="plans.length && event.paid"
-        ref="register"
-        class="vid-plans"
-      >
-        <div class="container">
-          <h4 class="section-heading">PLANS</h4>
-          <el-row type="flex" class="flex-wrap mt-5" :gutter="30">
-            <el-col
-              v-for="(plan, index) in plans"
-              :key="index"
-              :xs="24"
-              :sm="12"
-              :md="8"
-            >
-              <div class="vid-attendees-container">
-                <div class="payment-plan">
-                  <h4>{{ plan.eventPlanName }}</h4>
-                  <h2>
-                    {{ plan.eventPlanCurrency }} {{ plan.eventPlanAmount }}
-                  </h2>
-                  <p>{{ plan.eventPlanDetails }}</p>
-                  <el-button
-                    v-if="eventActive"
-                    size="small"
-                    type="white"
-                    @click="setAttendeePlan(plan.eventPlanRef)"
-                    >Pay To Attend</el-button
-                  >
-                </div>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-      </section>
-      <section v-if="!event.paid && eventActive" ref="register" class="vid-cta">
-        <div class="container">
-          <p>Register for this event now!</p>
-          <el-form
-            ref="registerForm"
-            :model="attend"
-            :rules="rules"
-            label-position="top"
-          >
-            <el-row
-              v-if="event.allowPhoneNumber"
-              type="flex"
-              class="flex-wrap"
-              :gutter="20"
-            >
-              <el-col :md="12"
-                ><el-form-item label="Your email" prop="attendee_email">
-                  <el-input
-                    v-model="attend.attendee_email"
-                  ></el-input> </el-form-item
-              ></el-col>
-              <el-col :md="12"
-                ><el-form-item
-                  v-only-number
-                  label="Your phone number"
-                  prop="attendee_phone_number"
-                >
-                  <el-input
-                    v-model="attend.attendee_phone_number"
-                    maxlength="11"
-                  ></el-input> </el-form-item
-              ></el-col>
-            </el-row>
-            <el-row v-else type="flex" class="flex-wrap">
-              <el-col :md="24"
-                ><el-form-item label="" prop="attendee_email">
-                  <el-input
-                    v-model="attend.attendee_email"
-                  ></el-input> </el-form-item
-              ></el-col>
-            </el-row>
-            <el-row type="flex" class="flex-wrap" :gutter="30">
+    <div v-if="event.rsvp">
+      <template v-if="!isUserRegistered">
+        <section
+          v-if="plans.length && event.paid"
+          ref="register"
+          class="vid-plans"
+        >
+          <div class="container">
+            <h4 class="section-heading">PLANS</h4>
+            <el-row type="flex" class="flex-wrap mt-5" :gutter="30">
               <el-col
-                v-for="(question, index) in attend.questions"
+                v-for="(plan, index) in plans"
                 :key="index"
-                :md="24"
+                :xs="24"
+                :sm="12"
+                :md="8"
               >
-                <el-form-item :label="question.question">
-                  <el-input v-model="question.answer" type="text" />
-                </el-form-item>
+                <div class="vid-attendees-container">
+                  <div class="payment-plan">
+                    <h4>{{ plan.eventPlanName }}</h4>
+                    <h2>
+                      {{ plan.eventPlanCurrency }} {{ plan.eventPlanAmount }}
+                    </h2>
+                    <p>{{ plan.eventPlanDetails }}</p>
+                    <el-button
+                      v-if="eventActive"
+                      size="small"
+                      type="white"
+                      @click="setAttendeePlan(plan.eventPlanRef)"
+                      >Pay To Attend</el-button
+                    >
+                  </div>
+                </div>
               </el-col>
             </el-row>
-          </el-form>
-          <el-button
-            :loading="attending"
-            type="white"
-            placeholder="you@mail.com"
-            @click="attendEvent"
-            >Attend</el-button
-          >
-        </div>
-      </section>
-    </template>
-    <template v-else>
-      <section class="vid-cta">
-        <div class="container">
-          <h4>You are already registered for this event</h4>
-          <el-button type="white" @click="scrollTo('eventDetails')"
-            >See details</el-button
-          >
-        </div>
-      </section>
-    </template>
+          </div>
+        </section>
+        <section
+          v-if="!event.paid && eventActive"
+          ref="register"
+          class="vid-cta"
+        >
+          <div class="container">
+            <p>Register for this event now!</p>
+            <el-form
+              ref="registerForm"
+              :model="attend"
+              :rules="rules"
+              label-position="top"
+            >
+              <el-row
+                v-if="event.allowPhoneNumber"
+                type="flex"
+                class="flex-wrap"
+                :gutter="20"
+              >
+                <el-col :md="12"
+                  ><el-form-item label="Your email" prop="attendee_email">
+                    <el-input
+                      v-model="attend.attendee_email"
+                    ></el-input> </el-form-item
+                ></el-col>
+                <el-col :md="12"
+                  ><el-form-item
+                    v-only-number
+                    label="Your phone number"
+                    prop="attendee_phone_number"
+                  >
+                    <el-input
+                      v-model="attend.attendee_phone_number"
+                      maxlength="11"
+                    ></el-input> </el-form-item
+                ></el-col>
+              </el-row>
+              <el-row v-else type="flex" class="flex-wrap">
+                <el-col :md="24"
+                  ><el-form-item label="" prop="attendee_email">
+                    <el-input
+                      v-model="attend.attendee_email"
+                    ></el-input> </el-form-item
+                ></el-col>
+              </el-row>
+              <el-row type="flex" class="flex-wrap" :gutter="30">
+                <el-col
+                  v-for="(question, index) in attend.questions"
+                  :key="index"
+                  :md="24"
+                >
+                  <el-form-item :label="question.question">
+                    <el-input v-model="question.answer" type="text" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <el-button
+              :loading="attending"
+              type="white"
+              placeholder="you@mail.com"
+              @click="attendEvent"
+              >Attend</el-button
+            >
+          </div>
+        </section>
+      </template>
+      <template v-else>
+        <section class="vid-cta">
+          <div class="container">
+            <h4>You are already registered for this event</h4>
+            <el-button type="white" @click="scrollTo('eventDetails')"
+              >See details</el-button
+            >
+          </div>
+        </section>
+      </template>
+    </div>
     <el-dialog width="50%" :visible.sync="showPaymentDialog">
       <div v-loading="paying" class="payment-form">
         <el-form ref="payToAttendForm" :model="attend" :rules="rules">
@@ -522,6 +528,9 @@ export default {
       set(value) {
         this.$emit('update:show', value)
       }
+    },
+    showEventDetails() {
+      return this.event ? this.isUserRegistered || !this.event.rsvp : false
     },
     calendars() {
       return [
