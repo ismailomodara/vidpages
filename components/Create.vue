@@ -63,10 +63,10 @@
                 <div
                   v-if="selectedVideoProvider.provider.toLowerCase() === 'zoom'"
                 >
-                  <el-radio v-model="meetingChoice" :label="1" border
+                  <el-radio v-model="event.create_meeting" :label="true" border
                     >Create Meeting For Me</el-radio
                   >
-                  <el-radio v-model="meetingChoice" :label="2" border
+                  <el-radio v-model="event.create_meeting" :label="false" border
                     >Manually Enter Details</el-radio
                   >
                 </div>
@@ -115,7 +115,7 @@
               </el-row>
             </template>
           </div>
-          <div v-if="meetingChoice === 1" class="vid-section">
+          <div v-if="event.create_meeting" class="vid-section">
             <el-checkbox v-model="createMeeting.room"
               >Use personal meeting room</el-checkbox
             >
@@ -123,61 +123,60 @@
               >Generate a password for the meeting</el-checkbox
             >
           </div>
-          <div
-            v-if="meetingChoice === 2 && selectedVideoProvider"
-            class="vid-section"
-          >
-            <h6>{{ selectedVideoProvider.provider }} Info</h6>
-            <el-row :gutter="30" type="flex" class="flex-wrap">
-              <el-col :lg="24"
-                ><el-form-item
-                  v-custom-input="event.video_url"
-                  class="vid-custom-input"
-                  label="URL"
-                  prop="video_url"
-                >
-                  <el-input
-                    v-model="event.video_url"
-                    type="text"
-                    auto-complete="off"
-                    prefix-icon="vid-icon--hash"
-                  ></el-input> </el-form-item
-              ></el-col>
-            </el-row>
-            <el-row
-              v-if="selectedVideoProvider.provider.toLowerCase() === 'zoom'"
-              :gutter="30"
-              type="flex"
-            >
-              <el-col :lg="12"
-                ><el-form-item
-                  v-custom-input="event.zoom_meeting_id"
-                  class="vid-custom-input"
-                  label="ID"
-                  prop="zoom_meeting_id"
-                >
-                  <el-input
-                    v-model="event.zoom_meeting_id"
-                    type="text"
-                    auto-complete="off"
-                    prefix-icon="vid-icon--hash"
-                  ></el-input> </el-form-item
-              ></el-col>
-              <el-col :lg="12"
-                ><el-form-item
-                  v-custom-input="event.zoom_meeting_password"
-                  class="vid-custom-input"
-                  label="Password"
-                  prop="zoom_meeting_password"
-                >
-                  <el-input
-                    v-model="event.zoom_meeting_password"
-                    type="password"
-                    auto-complete="off"
-                    prefix-icon="vid-icon--lock"
-                  ></el-input> </el-form-item
-              ></el-col>
-            </el-row>
+          <div v-if="event.create_meeting === false">
+            <div v-if="selectedVideoProvider" class="vid-section">
+              <h6>{{ selectedVideoProvider.provider }} Info</h6>
+              <el-row :gutter="30" type="flex" class="flex-wrap">
+                <el-col :lg="24"
+                  ><el-form-item
+                    v-custom-input="event.video_url"
+                    class="vid-custom-input"
+                    label="URL"
+                    prop="video_url"
+                  >
+                    <el-input
+                      v-model="event.video_url"
+                      type="text"
+                      auto-complete="off"
+                      prefix-icon="vid-icon--hash"
+                    ></el-input> </el-form-item
+                ></el-col>
+              </el-row>
+              <el-row
+                v-if="selectedVideoProvider.provider.toLowerCase() === 'zoom'"
+                :gutter="30"
+                type="flex"
+              >
+                <el-col :lg="12"
+                  ><el-form-item
+                    v-custom-input="event.zoom_meeting_id"
+                    class="vid-custom-input"
+                    label="ID"
+                    prop="zoom_meeting_id"
+                  >
+                    <el-input
+                      v-model="event.zoom_meeting_id"
+                      type="text"
+                      auto-complete="off"
+                      prefix-icon="vid-icon--hash"
+                    ></el-input> </el-form-item
+                ></el-col>
+                <el-col :lg="12"
+                  ><el-form-item
+                    v-custom-input="event.zoom_meeting_password"
+                    class="vid-custom-input"
+                    label="Password"
+                    prop="zoom_meeting_password"
+                  >
+                    <el-input
+                      v-model="event.zoom_meeting_password"
+                      type="password"
+                      auto-complete="off"
+                      prefix-icon="vid-icon--lock"
+                    ></el-input> </el-form-item
+                ></el-col>
+              </el-row>
+            </div>
           </div>
           <div class="vid-section">
             <h6>Event Details</h6>
@@ -390,7 +389,6 @@ export default {
       updateCoverImage: false,
       backgroundUrl: '',
       backgroundType: '',
-      meetingChoice: null,
       createMeeting: {
         room: false,
         password: false
@@ -410,6 +408,7 @@ export default {
         event_payment_provider_secret: '',
         event_video: '',
         event_hashtag: '',
+        create_meeting: '',
         paid: 0,
         rsvp: 0,
         hide_registration: 0,
