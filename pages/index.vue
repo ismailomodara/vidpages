@@ -216,7 +216,7 @@ export default {
           if (response.data.success) {
             this.videoProviders = response.data.providers
             this.notification = response.data.notification
-            this.getIp()
+            this.loadingPage = false
           }
         })
         .catch()
