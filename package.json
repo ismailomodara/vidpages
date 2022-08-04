@@ -21,6 +21,7 @@
     "moment": "^2.25.3",
     "nuxt": "^2.0.0",
     "remove": "^0.1.5",
+    "sass": "^1.32.5",
     "vue-click-outside": "^1.1.0",
     "vue-ele-upload-video": "^2.0.5",
     "vue-json-csv": "^1.2.11",
@@ -34,7 +35,6 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-nuxt": ">=0.4.2",
     "eslint-plugin-prettier": "^3.1.2",
-    "node-sass": "^4.14.0",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2"
   }

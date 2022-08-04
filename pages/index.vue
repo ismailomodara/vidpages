@@ -2,7 +2,7 @@
   <div>
     <navbar />
     <div class="vid-home">
-      <div v-if="videoProviders.length" class="vid-header">
+      <div class="vid-header">
         <div class="container">
           <el-row type="flex" :gutter="40" align="middle">
             <el-col :md="12" class="vid-header-title">
@@ -14,16 +14,9 @@
               </div>
               <h2>Create video based events in minutes</h2>
               <div>
-                <el-dropdown>
-                  <el-button type="primary">Use A Video Platform</el-button>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      v-for="(provider, index) in videoProviders"
-                      :key="index"
-                      ><a :href="provider.oauthUrl">{{ provider.provider }}</a>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                <el-button type="primary" @click="goToZoom"
+                  >Use A Video Platform</el-button
+                >
                 <el-button
                   type="white"
                   class="ml-4"
@@ -139,16 +132,7 @@
           <div>
             <h4>Start creating events today!</h4>
             <div>
-              <el-dropdown>
-                <el-button type="primary">Use A Video Platform</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    v-for="(provider, index) in videoProviders"
-                    :key="index"
-                    ><a :href="provider.oauthUrl">{{ provider.provider }}</a>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <el-button type="primary">Use A Video Platform</el-button>
               <el-button type="white" @click="$router.push({ name: 'create' })"
                 >Continue as a Guest</el-button
               >
@@ -176,7 +160,6 @@
 </template>
 
 <script>
-import request from '../controller/request'
 import Navbar from '~/components/Navbar'
 
 export default {
@@ -202,42 +185,19 @@ export default {
     this.fetchAllVideoProviders()
   },
   methods: {
-    LoadSaasble(planId) {
-      window.InitSaasbleWidget({
-        email: 'dssssdwe@gmail.com',
-        token: 'sk_T6js4XxEp8JnBEJd7qCFQA',
-        planId
-      })
-    },
-    async fetchAllVideoProviders() {
-      await request
-        .getVideoProviders()
-        .then((response) => {
-          if (response.data.success) {
-            this.videoProviders = response.data.providers
-            this.notification = response.data.notification
-            this.loadingPage = false
+    fetchAllVideoProviders() {
+      setTimeout(() => {
+        this.videoProviders = [
+          {
+            provider: 'zoom',
+            oauthUrl: 'https://zoom.com'
           }
-        })
-        .catch()
+        ]
+        this.loadingPage = false
+      }, 1500)
     },
-    getIp() {
-      fetch('https://api.ipify.org?format=json')
-        .then((x) => x.json())
-        .then(({ ip }) => {
-          this.fetchAllPlans(ip)
-        })
-    },
-    async fetchAllPlans(ip) {
-      await request
-        .getPlans(ip)
-        .then((response) => {
-          if (response.data.success) {
-            this.plans = response.data.plans
-            this.loadingPage = false
-          }
-        })
-        .catch()
+    goToZoom() {
+      window.location.href = 'https://zoom.com'
     }
   }
 }

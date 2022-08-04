@@ -358,7 +358,6 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
 import request from '../controller/request'
 import Navbar from '~/components/Navbar'
 import UpdateCoverImage from '~/components/BackgroundImage/UpdateCoverImage'
@@ -492,48 +491,22 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.status) {
-      this.isLoggedInVia = true
-      this.setProvider()
-    }
     this.fetchAllVideoProviders()
-    this.generateRef()
   },
   methods: {
-    setProvider() {
-      const data = this.$route.query
-      if (data) {
-        Cookies.set('user', JSON.stringify(data))
-        this.event.user_id = data.user_id
-        this.event.user_email = data.email
-        this.event.video_provider = data.provider
-        this.selectedVideoProvider = {
-          provider: data.provider
-        }
-        this.meetingChoice =
-          this.selectedVideoProvider.provider.toLowerCase() !== 'zoom' ? 1 : 0
-      }
-    },
-    async fetchAllVideoProviders() {
-      await request
-        .getVideoProviders()
-        .then((response) => {
-          if (response.data.success) {
-            this.videoProviders = response.data.providers
-            this.loadingPage = false
+    fetchAllVideoProviders() {
+      setTimeout(() => {
+        this.videoProviders = [
+          {
+            provider: 'zoom',
+            oauthUrl: 'https://zoom.com'
           }
-        })
-        .catch()
+        ]
+        this.loadingPage = false
+      }, 1500)
     },
-    async generateRef() {
-      await request
-        .generateEventRef()
-        .then((response) => {
-          if (response.data.success) {
-            this.event.event_ref = response.data.ref
-          }
-        })
-        .catch()
+    goToZoom() {
+      window.location.href = 'https://zoom.com'
     },
     setVideoProvider(value) {
       this.selectedVideoProvider = this.videoProviders[value]
@@ -597,10 +570,8 @@ export default {
 .vid-create {
   .vid-header {
     height: 550px;
-    background: #222151;
     position: relative;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: #222151 no-repeat center;
     background-size: cover;
 
     video {
